@@ -53,12 +53,6 @@ const LoginAdmin = async (req, res) => {
                 throw new Error("Please enter valid password!");
             }
 
-            const token = jwt.sign(
-                { _id: data.rows[0].empid },
-                process.env.JWT_TOKEN_KEY
-            );
-
-            // console.log(token);
             const empid = data.rows[0].empid;
             const fname = data.rows[0].fname;
             const dname = data.rows[0].dname;
@@ -67,17 +61,58 @@ const LoginAdmin = async (req, res) => {
             const mobile = data.rows[0].mobile;
             const password = data.rows[0].password;
 
-            res.send({
-                empid,
-                fname,
-                dname,
-                dob,
-                email,
-                mobile,
-                password,
-                token,
-                role: "user",
-            });
+            const token = jwt.sign(
+                { _id: data.rows[0].empid },
+                process.env.JWT_TOKEN_KEY
+            );
+
+            // console.log(token);
+
+            const loginstaffdata = await conn.query(
+                "select * from tblstafflogin where empid=$1",
+                [user.username]
+            );
+
+            // res.send(loginstaffdata);
+            if (loginstaffdata.rowCount <= 0) {
+                // res.send("HELLO FROM INSERT");
+
+                await conn.query("insert into tblstafflogin values($1,$2)", [
+                    user.username,
+                    token,
+                ]);
+
+                res.send({
+                    empid,
+                    fname,
+                    dname,
+                    dob,
+                    email,
+                    mobile,
+                    password,
+                    token,
+                    role: "user",
+                });
+            } else {
+                await conn.query(
+                    "update tblstafflogin set token=$1 where empid=$2",
+                    [token, user.username]
+                );
+
+                // res.send(setstafftoken);
+
+                res.send({
+                    empid,
+                    fname,
+                    dname,
+                    dob,
+                    email,
+                    mobile,
+                    password,
+                    token,
+                    role: "user",
+                });
+            }
         }
     } catch (err) {
         res.status(400).send({ err: err.message });
@@ -85,11 +120,23 @@ const LoginAdmin = async (req, res) => {
 };
 const LogoutAdmin = async (req, res) => {
     try {
+        if (req.user[0]._id) {
+            await conn.query(
+                "update admin set token='' where _id=$1 and token=$2",
+                [req.user[0]._id, req.token]
+            );
+
+            res.send();
+            return;
+        }
+
         await conn.query(
-            `update admin set token='' where token='${req.token}'`
+            "update tblstafflogin set token='' where empid=$1 and token=$2",
+            [req.user[0].empid, req.token]
         );
 
         res.send();
+        return;
     } catch (err) {
         res.status(400).send({ err: err.message });
     }
