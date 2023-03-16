@@ -6,6 +6,7 @@ let PORT = process.env.PORT || 3000;
 const adminRouter = require("../router/admin");
 const tblmasterdeptRouter = require("../router/tblmasterdept");
 const tblstaffRouter = require("../router/tblstaff");
+const tblstaffCheckIn = require("../router/staff-checkin");
 app.use(express.json());
 const cors = require("cors");
 
@@ -19,6 +20,7 @@ app.use(cors(corsOption));
 app.use(adminRouter);
 app.use(tblmasterdeptRouter);
 app.use(tblstaffRouter);
+app.use(tblstaffCheckIn);
 
 app.listen(PORT, () => {
     console.log(`server running on ${PORT}`);
