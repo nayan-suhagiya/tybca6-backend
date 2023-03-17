@@ -27,9 +27,10 @@ const checkIn = async (req, res) => {
 const checkOut = async (req, res) => {
     try {
         const data = req.body;
-        // console.log(req.data);
+        // console.log(data.empid);
         // console.log(req.token);
         checkoutDate = new Date();
+        // console.log(checkoutDate);
 
         const updateData = await conn.query(
             "update tblstaffcheckin set checkout=$1 where empid=$2 and token=$3",
@@ -49,4 +50,15 @@ const checkOut = async (req, res) => {
     }
 };
 
-module.exports = { checkIn, checkOut };
+const checkInTableDetails = async (req, res) => {
+    try {
+        const data = await conn.query("select * from tblstaffcheckin");
+
+        const checkInDetails = data.rows;
+        res.send(checkInDetails);
+    } catch (error) {
+        res.status(400).send({ error });
+    }
+};
+
+module.exports = { checkIn, checkOut, checkInTableDetails };
