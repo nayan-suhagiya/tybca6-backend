@@ -7,8 +7,8 @@ const checkIn = async (req, res) => {
         checkinDate = new Date();
 
         const insertData = await conn.query(
-            "insert into tblstaffcheckin values ($1,$2,$3,null)",
-            [data.empid, req.token, checkinDate]
+            "insert into tblstaffcheckin values ($1,$2,null,$3)",
+            [data.empid, checkinDate, req.token]
         );
 
         // res.send(insertData);
@@ -33,8 +33,8 @@ const checkOut = async (req, res) => {
         // console.log(checkoutDate);
 
         const updateData = await conn.query(
-            "update tblstaffcheckin set checkout=$1 where empid=$2 and token=$3",
-            [checkoutDate, data.empid, req.token]
+            "update tblstaffcheckin set checkout=$1,token=$2 where empid=$3",
+            [checkoutDate, req.token, data.empid]
         );
 
         // res.send(updateData);
