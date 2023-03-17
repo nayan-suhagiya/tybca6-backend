@@ -4,5 +4,6 @@ const authAdmin = require("../middleware/authAdmin");
 const staff_checkin = require("../controller/staff-checkin");
 
 router.post("/staff/check-in", authAdmin, staff_checkin.checkIn);
+router.patch("/staff/check-out", authAdmin, staff_checkin.checkOut);
 
 module.exports = router;
