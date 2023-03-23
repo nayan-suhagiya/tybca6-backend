@@ -149,4 +149,48 @@ const DeleteStaff = async (req, res) => {
     }
 };
 
-module.exports = { AddStaff, GetStaff, UpdateStaff, DeleteStaff };
+const addLeave = async (req, res) => {
+    try {
+        const data = req.body;
+
+        const addLeaveData = await conn.query(
+            "insert into tblleave values($1)",
+            [data.date]
+        );
+
+        if (addLeaveData.rowCount <= 0) {
+            res.status(400).send({ error: "unable to insert" });
+            return;
+        }
+
+        res.send({ added: true });
+    } catch (error) {
+        return res.status(400).send({ error });
+    }
+};
+
+const getAllLeave = async (req, res) => {
+    try {
+        const leaveData = await conn.query("select * from tblleave");
+
+        if (leaveData.rowCount <= 0) {
+            res.status(404).send({ error: "not found!" });
+            return;
+        }
+
+        const data = leaveData.rows;
+
+        res.send(data);
+    } catch (error) {
+        res.status(400).send({ error });
+    }
+};
+
+module.exports = {
+    AddStaff,
+    GetStaff,
+    UpdateStaff,
+    DeleteStaff,
+    addLeave,
+    getAllLeave,
+};

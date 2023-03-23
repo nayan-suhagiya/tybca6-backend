@@ -8,4 +8,6 @@ router.get("/admin/get-staff", authAdmin, staff.GetStaff);
 router.patch("/admin/update-staff", authAdmin, staff.UpdateStaff);
 router.delete("/admin/delete-staff/:id", authAdmin, staff.DeleteStaff);
 
+router.post("/admin/addleave", authAdmin, staff.addLeave);
+router.get("/admin/getall-leave", staff.getAllLeave);
 module.exports = router;
