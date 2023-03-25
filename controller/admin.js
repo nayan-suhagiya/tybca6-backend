@@ -60,6 +60,7 @@ const LoginAdmin = async (req, res) => {
             const email = data.rows[0].email;
             const mobile = data.rows[0].mobile;
             const password = data.rows[0].password;
+            const deptid = data.rows[0].deptid;
 
             const token = jwt.sign(
                 { _id: data.rows[0].empid },
@@ -90,6 +91,7 @@ const LoginAdmin = async (req, res) => {
                     email,
                     mobile,
                     password,
+                    deptid,
                     token,
                     role: "user",
                 });
@@ -109,6 +111,7 @@ const LoginAdmin = async (req, res) => {
                     email,
                     mobile,
                     password,
+                    deptid,
                     token,
                     role: "user",
                 });
