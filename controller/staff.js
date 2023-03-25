@@ -169,6 +169,30 @@ const addLeave = async (req, res) => {
     }
 };
 
+const removeLeave = async (req, res) => {
+    try {
+        const date = req.params.date;
+
+        // console.log(date);
+
+        const deleteLeave = await conn.query(
+            "delete from tblleave where leavedate=$1",
+            [date]
+        );
+
+        // console.log(deleteLeave);
+
+        if (deleteLeave.rowCount <= 0) {
+            res.send({ message: "not found!", deleted: false });
+            return;
+        }
+
+        res.send({ deleted: true });
+    } catch (error) {
+        return res.status(400).send({ error });
+    }
+};
+
 const getAllLeave = async (req, res) => {
     try {
         const leaveData = await conn.query("select * from tblleave");
@@ -193,4 +217,5 @@ module.exports = {
     DeleteStaff,
     addLeave,
     getAllLeave,
+    removeLeave,
 };
