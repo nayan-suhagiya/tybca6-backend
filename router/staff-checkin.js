@@ -11,4 +11,11 @@ router.get(
     staff_checkin.checkInTableDetails
 );
 
+router.post("/staff/apply-leave", authAdmin, staff_checkin.applyLeave);
+router.get(
+    "/staff/get-applied-leave/:empid",
+    authAdmin,
+    staff_checkin.getLeaveData
+);
+
 module.exports = router;

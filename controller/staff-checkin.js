@@ -61,4 +61,61 @@ const checkInTableDetails = async (req, res) => {
     }
 };
 
-module.exports = { checkIn, checkOut, checkInTableDetails };
+const applyLeave = async (req, res) => {
+    try {
+        const data = req.body;
+
+        const insertLeave = await conn.query(
+            "insert into tblstaffleave values($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)",
+            [
+                data.empid,
+                data.deptid,
+                data.fname,
+                data.dname,
+                data.reason,
+                data.fromdate,
+                data.todate,
+                data.description,
+                data.appliedOn,
+                data.status,
+            ]
+        );
+
+        // console.log(insertLeave);
+
+        if (insertLeave.rowCount <= 0) {
+            res.status(400).send({ error: "unable to add" });
+        } else {
+            res.send({
+                added: true,
+                empid: data.empid,
+                appliedOn: data.appliedOn,
+            });
+        }
+    } catch (error) {
+        res.status(400).send({ error });
+    }
+};
+
+const getLeaveData = async (req, res) => {
+    try {
+        const data = await conn.query(
+            "select * from tblstaffleave where empid=$1",
+            [req.params.empid]
+        );
+
+        const sendingData = data.rows;
+
+        res.send(sendingData);
+    } catch (error) {
+        res.status(400).send({ error });
+    }
+};
+
+module.exports = {
+    checkIn,
+    checkOut,
+    checkInTableDetails,
+    applyLeave,
+    getLeaveData,
+};
