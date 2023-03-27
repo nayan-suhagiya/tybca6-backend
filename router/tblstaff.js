@@ -11,4 +11,17 @@ router.delete("/admin/delete-staff/:id", authAdmin, staff.DeleteStaff);
 router.post("/admin/addleave", authAdmin, staff.addLeave);
 router.delete("/admin/removeleave/:date", authAdmin, staff.removeLeave);
 router.get("/admin/getall-leave", staff.getAllLeave);
+
+router.get(
+    "/admin/getpending-staffleave",
+    authAdmin,
+    staff.getPendingStaffLeave
+);
+router.get(
+    "/admin/getapproveorreject-staffleave",
+    authAdmin,
+    staff.getApproveOrRejectStaffLeave
+);
+router.patch("/admin/approve-staffleave", authAdmin, staff.approveStaffLeave);
+router.patch("/admin/reject-staffleave", authAdmin, staff.rejectStaffLeave);
 module.exports = router;

@@ -10,10 +10,9 @@ const authAdmin = async (req, res, next) => {
 
         if (verify._id == 21410159) {
             // res.send({ _id: verify._id });
-            const data = await conn.query(
-                "select * from admin where _id=$1 and token=$2",
-                [verify._id, token]
-            );
+            const data = await conn.query("select * from admin where _id=$1", [
+                verify._id,
+            ]);
 
             if (data.rowCount <= 0) {
                 return res.status(401).send({ err: "Please authenticate!" });

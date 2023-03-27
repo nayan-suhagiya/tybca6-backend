@@ -210,6 +210,82 @@ const getAllLeave = async (req, res) => {
     }
 };
 
+const getPendingStaffLeave = async (req, res) => {
+    try {
+        const pendingLeaveData = await conn.query(
+            "select * from tblstaffleave where status='Pending'"
+        );
+
+        // console.log(pendingLeaveData);
+
+        const sendingData = pendingLeaveData.rows;
+
+        res.send(sendingData);
+    } catch (error) {
+        res.status(400).send({ error });
+    }
+};
+
+const getApproveOrRejectStaffLeave = async (req, res) => {
+    try {
+        const approveOrRejectLeaveData = await conn.query(
+            "select * from tblstaffleave where status='Approved' or status='Rejected'"
+        );
+
+        // console.log(approveOrRejectLeaveData);
+
+        const sendingData = approveOrRejectLeaveData.rows;
+
+        res.send(sendingData);
+    } catch (error) {
+        res.status(400).send({ error });
+    }
+};
+
+const approveStaffLeave = async (req, res) => {
+    try {
+        const data = req.body;
+        // console.log(data);
+
+        fromdate = moment(data.fromdate).format("YYYY-MM-DD");
+
+        const approveStaffLeave = await conn.query(
+            "update tblstaffleave set status='Approved' where empid=$1 and fromdate=$2",
+            [data.empid, fromdate]
+        );
+
+        if (approveStaffLeave.rowCount <= 0) {
+            return res.status(400).send({ error: "unable to approve!" });
+        }
+
+        res.send({ approved: true, empid: data.empid });
+    } catch (error) {
+        res.status(400).send({ error });
+    }
+};
+
+const rejectStaffLeave = async (req, res) => {
+    try {
+        const data = req.body;
+        // console.log(data);
+
+        fromdate = moment(data.fromdate).format("YYYY-MM-DD");
+
+        const rejectStaffLeave = await conn.query(
+            "update tblstaffleave set status='Rejected' where empid=$1 and fromdate=$2",
+            [data.empid, fromdate]
+        );
+
+        if (rejectStaffLeave.rowCount <= 0) {
+            return res.status(400).send({ error: "unable to reject!" });
+        }
+
+        res.send({ rejected: true, empid: data.empid });
+    } catch (error) {
+        res.status(400).send({ error });
+    }
+};
+
 module.exports = {
     AddStaff,
     GetStaff,
@@ -218,4 +294,8 @@ module.exports = {
     addLeave,
     getAllLeave,
     removeLeave,
+    getPendingStaffLeave,
+    getApproveOrRejectStaffLeave,
+    approveStaffLeave,
+    rejectStaffLeave,
 };
