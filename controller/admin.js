@@ -53,15 +53,7 @@ const LoginAdmin = async (req, res) => {
                 throw new Error("Please enter valid password!");
             }
 
-            const empid = data.rows[0].empid;
-            const fname = data.rows[0].fname;
-            const dob = data.rows[0].dob;
-            const email = data.rows[0].email;
-            const mobile = data.rows[0].mobile;
-            const deptid = data.rows[0].deptid;
-            const jdate = data.rows[0].jdate;
-            const city = data.rows[0].city;
-            const address = data.rows[0].address;
+            const sendingData = data.rows[0];
 
             const token = jwt.sign(
                 { _id: data.rows[0].empid },
@@ -85,16 +77,19 @@ const LoginAdmin = async (req, res) => {
                 ]);
 
                 res.send({
-                    empid,
-                    fname,
-                    dob,
-                    email,
-                    mobile,
-                    deptid,
+                    empid: sendingData.empid,
+                    fname: sendingData.fname,
+                    gender: sendingData.gender,
+                    dname: sendingData.dname,
+                    email: sendingData.email,
+                    mobile: sendingData.mobile,
+                    dob: sendingData.dob,
+                    jdate: sendingData.jdate,
+                    city: sendingData.city,
+                    state: sendingData.state,
+                    address: sendingData.address,
+                    deptid: sendingData.deptid,
                     token,
-                    jdate,
-                    city,
-                    address,
                     role: "user",
                 });
             } else {
@@ -106,16 +101,19 @@ const LoginAdmin = async (req, res) => {
                 // res.send(setstafftoken);
 
                 res.send({
-                    empid,
-                    fname,
-                    dob,
-                    email,
-                    mobile,
-                    deptid,
+                    empid: sendingData.empid,
+                    fname: sendingData.fname,
+                    gender: sendingData.gender,
+                    dname: sendingData.dname,
+                    email: sendingData.email,
+                    mobile: sendingData.mobile,
+                    dob: sendingData.dob,
+                    jdate: sendingData.jdate,
+                    city: sendingData.city,
+                    state: sendingData.state,
+                    address: sendingData.address,
+                    deptid: sendingData.deptid,
                     token,
-                    jdate,
-                    city,
-                    address,
                     role: "user",
                 });
             }

@@ -82,6 +82,26 @@ const GetStaff = async (req, res) => {
     }
 };
 
+const getSpecificStaff = async (req, res) => {
+    try {
+        const empid = req.params.id;
+
+        const result = await conn.query(
+            "select * from tblstaff where empid=$1",
+            [empid]
+        );
+
+        if (result.rowCount <= 0) {
+            res.status(404).send({ message: "not found!" });
+            return;
+        }
+
+        const sendingData = result.rows[0];
+
+        res.send(sendingData);
+    } catch (error) {}
+};
+
 const UpdateStaff = async (req, res) => {
     try {
         const staff = req.body;
@@ -289,6 +309,7 @@ const rejectStaffLeave = async (req, res) => {
 module.exports = {
     AddStaff,
     GetStaff,
+    getSpecificStaff,
     UpdateStaff,
     DeleteStaff,
     addLeave,
