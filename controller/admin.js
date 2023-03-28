@@ -55,12 +55,13 @@ const LoginAdmin = async (req, res) => {
 
             const empid = data.rows[0].empid;
             const fname = data.rows[0].fname;
-            const dname = data.rows[0].dname;
             const dob = data.rows[0].dob;
             const email = data.rows[0].email;
             const mobile = data.rows[0].mobile;
-            const password = data.rows[0].password;
             const deptid = data.rows[0].deptid;
+            const jdate = data.rows[0].jdate;
+            const city = data.rows[0].city;
+            const address = data.rows[0].address;
 
             const token = jwt.sign(
                 { _id: data.rows[0].empid },
@@ -86,13 +87,14 @@ const LoginAdmin = async (req, res) => {
                 res.send({
                     empid,
                     fname,
-                    dname,
                     dob,
                     email,
                     mobile,
-                    password,
                     deptid,
                     token,
+                    jdate,
+                    city,
+                    address,
                     role: "user",
                 });
             } else {
@@ -106,13 +108,14 @@ const LoginAdmin = async (req, res) => {
                 res.send({
                     empid,
                     fname,
-                    dname,
                     dob,
                     email,
                     mobile,
-                    password,
                     deptid,
                     token,
+                    jdate,
+                    city,
+                    address,
                     role: "user",
                 });
             }
