@@ -68,6 +68,15 @@ const applyLeave = async (req, res) => {
     try {
         const data = req.body;
 
+        const leaveDays = await conn.query(
+            "select * from tblleave where leavedate=$1 or leavedate=$2",
+            [data.fromdate, data.todate]
+        );
+
+        if (leaveDays.rowCount !== 0) {
+            return res.send({ offday: true });
+        }
+
         const insertLeave = await conn.query(
             "insert into tblstaffleave values($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)",
             [
@@ -115,10 +124,26 @@ const getLeaveData = async (req, res) => {
     }
 };
 
+const getApprovedLeave = async (req, res) => {
+    try {
+        const data = await conn.query(
+            "select * from tblstaffleave where empid=$1 and status='Approved'",
+            [req.params.empid]
+        );
+
+        const sendingData = data.rows;
+
+        res.send(sendingData);
+    } catch (error) {
+        res.status(400).send({ error });
+    }
+};
+
 module.exports = {
     checkIn,
     checkOut,
     checkInTableDetails,
     applyLeave,
     getLeaveData,
+    getApprovedLeave,
 };

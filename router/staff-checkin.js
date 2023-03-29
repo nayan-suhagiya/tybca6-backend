@@ -17,5 +17,10 @@ router.get(
     authAdmin,
     staff_checkin.getLeaveData
 );
+router.get(
+    "/staff/get-approved-leave/:empid",
+    authAdmin,
+    staff_checkin.getApprovedLeave
+);
 
 module.exports = router;
