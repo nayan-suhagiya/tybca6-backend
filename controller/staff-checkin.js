@@ -5,10 +5,11 @@ const checkIn = async (req, res) => {
     try {
         const data = req.body;
         checkinDate = new Date();
+        date = moment(new Date()).format("YYYY-MM-DD");
 
         const insertData = await conn.query(
-            "insert into tblstaffcheckin values ($1,$2,null,$3)",
-            [data.empid, checkinDate, req.token]
+            "insert into tblstaffcheckin values ($1,$2,null,$3,$4)",
+            [data.empid, checkinDate, date, req.token]
         );
 
         // res.send(insertData);
@@ -18,7 +19,12 @@ const checkIn = async (req, res) => {
             return;
         }
 
-        res.send({ present: true, empid: data.empid, checkinDate });
+        res.send({
+            present: true,
+            empid: data.empid,
+            checkinDate,
+            token: req.token,
+        });
     } catch (error) {
         res.status(400).send({ error });
     }
@@ -27,14 +33,11 @@ const checkIn = async (req, res) => {
 const checkOut = async (req, res) => {
     try {
         const data = req.body;
-        // console.log(data.empid);
-        // console.log(req.token);
         checkoutDate = new Date();
-        // console.log(checkoutDate);
 
         const updateData = await conn.query(
-            "update tblstaffcheckin set checkout=$1,token=$2 where empid=$3",
-            [checkoutDate, req.token, data.empid]
+            "update tblstaffcheckin set checkout=$1,token=$2 where empid=$3 and date=$4",
+            [checkoutDate, req.token, data.empid, data.date]
         );
 
         // res.send(updateData);
