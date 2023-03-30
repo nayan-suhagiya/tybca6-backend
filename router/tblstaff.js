@@ -6,6 +6,11 @@ const staff = require("../controller/staff");
 router.post("/admin/add-staff", authAdmin, staff.AddStaff);
 router.get("/admin/get-staff", authAdmin, staff.GetStaff);
 router.get("/admin/get-staff/:id", authAdmin, staff.getSpecificStaff);
+router.get(
+    "/admin/get-staff-dname/:dname",
+    authAdmin,
+    staff.getStaffUsingDname
+);
 router.patch("/admin/update-staff", authAdmin, staff.UpdateStaff);
 router.delete("/admin/delete-staff/:id", authAdmin, staff.DeleteStaff);
 

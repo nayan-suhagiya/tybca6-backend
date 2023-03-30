@@ -102,6 +102,30 @@ const getSpecificStaff = async (req, res) => {
     } catch (error) {}
 };
 
+const getStaffUsingDname = async (req, res) => {
+    try {
+        const dname = req.params.dname;
+
+        // console.log(dname);
+
+        const result = await conn.query(
+            "select * from tblstaff where dname=$1",
+            [dname]
+        );
+
+        // console.log(result);
+        const sendingData = result.rows;
+
+        if (result.rowCount <= 0) {
+            // res.status(404).send({ message: "not found!" });
+            res.send(sendingData);
+            return;
+        }
+
+        res.send(sendingData);
+    } catch (error) {}
+};
+
 const UpdateStaff = async (req, res) => {
     try {
         const staff = req.body;
@@ -310,6 +334,7 @@ module.exports = {
     AddStaff,
     GetStaff,
     getSpecificStaff,
+    getStaffUsingDname,
     UpdateStaff,
     DeleteStaff,
     addLeave,
