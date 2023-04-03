@@ -22,5 +22,7 @@ router.get(
     authAdmin,
     staff_checkin.getApprovedLeave
 );
+router.post("/staff/add-absent", authAdmin, staff_checkin.addAbsentData);
+router.get("/staff/get-absent/:empid", authAdmin, staff_checkin.getAbsentData);
 
 module.exports = router;

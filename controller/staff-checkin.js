@@ -139,6 +139,75 @@ const getApprovedLeave = async (req, res) => {
     }
 };
 
+const addAbsentData = async (req, res) => {
+    try {
+        const data = req.body;
+        const empid = data.empid;
+        const dateArr = data.date;
+        const month = data.month;
+        const year = data.year;
+
+        const findData = await conn.query(
+            "select * from tblstaffabsent where empid=$1 and month=$2 and year=$3",
+            [empid, month, year]
+        );
+
+        // console.log(findData);
+
+        if (findData.rowCount <= 0) {
+            const insertData = await conn.query(
+                "insert into tblstaffabsent values($1,$2,$3,$4)",
+                [empid, dateArr, month, year]
+            );
+
+            if (insertData.rowCount <= 0) {
+                res.status(400).send();
+                return;
+            }
+
+            res.send({
+                added: true,
+            });
+        } else {
+            const updateData = await conn.query(
+                "update tblstaffabsent set date=$1 where empid=$2 and month=$3 and year=$4",
+                [dateArr, empid, month, year]
+            );
+
+            // if (updateData.rowCount <= 0) {
+            //     res.status(400).send();
+            //     return;
+            // }
+
+            res.send({
+                updated: true,
+            });
+        }
+    } catch (error) {
+        res.status(400).send({ error });
+    }
+};
+
+const getAbsentData = async (req, res) => {
+    try {
+        const data = await conn.query(
+            "select * from tblstaffabsent where empid=$1",
+            [req.params.empid]
+        );
+
+        // if (data.rowCount <= 0) {
+        //     res.status(404).send({ err: "not found!" });
+        //     return;
+        // }
+
+        const sendingData = data.rows;
+
+        res.send(sendingData);
+    } catch (error) {
+        res.status(400).send({ error });
+    }
+};
+
 module.exports = {
     checkIn,
     checkOut,
@@ -146,4 +215,6 @@ module.exports = {
     applyLeave,
     getLeaveData,
     getApprovedLeave,
+    addAbsentData,
+    getAbsentData,
 };
