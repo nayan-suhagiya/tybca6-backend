@@ -1,7 +1,7 @@
 const express = require("express");
 const router = new express.Router();
 const authAdmin = require("../middleware/authAdmin");
-const staff = require("../controller/staff");
+const staff = require("../controller/adminstaff");
 
 router.post("/admin/add-staff", authAdmin, staff.AddStaff);
 router.get("/admin/get-staff", authAdmin, staff.GetStaff);

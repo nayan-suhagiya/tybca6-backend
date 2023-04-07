@@ -1,347 +1,220 @@
 const conn = require("../db/conn");
 const moment = require("moment");
 
-const AddStaff = async (req, res) => {
+const checkIn = async (req, res) => {
     try {
-        // res.send(req.body);
-        const staff = req.body;
+        const data = req.body;
+        checkinDate = new Date();
+        date = moment(new Date()).format("YYYY-MM-DD");
 
-        empid = staff.empid;
-        fname = staff.fname;
-        gender = staff.gender;
-        dname = staff.dname;
-        email = staff.email;
-        mobile = staff.mobile;
-        dob = staff.dob;
-        jdate = staff.jdate;
-        city = staff.city;
-        state = staff.state;
-        address = staff.address;
-        password = staff.password;
-        deptid = staff.deptid;
+        const insertData = await conn.query(
+            "insert into tblstaffcheckin values ($1,$2,null,$3,$4)",
+            [data.empid, checkinDate, date, req.token]
+        );
 
-        if (
-            !empid ||
-            !fname ||
-            !gender ||
-            !dname ||
-            !email ||
-            !mobile ||
-            !dob ||
-            !jdate ||
-            !city ||
-            !state ||
-            !address ||
-            !password ||
-            !deptid
-        ) {
-            res.status(400).send({ message: "please provide all details" });
+        // res.send(insertData);
+
+        if (insertData.rowCount <= 0) {
+            res.status(400).send();
             return;
         }
 
-        const insert = await conn.query(
-            "insert into tblstaff values($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)",
+        res.send({
+            present: true,
+            empid: data.empid,
+            checkinDate,
+            token: req.token,
+        });
+    } catch (error) {
+        res.status(400).send({ error });
+    }
+};
+
+const checkOut = async (req, res) => {
+    try {
+        const data = req.body;
+        checkoutDate = new Date();
+
+        const updateData = await conn.query(
+            "update tblstaffcheckin set checkout=$1,token=$2 where empid=$3 and date=$4",
+            [checkoutDate, req.token, data.empid, data.date]
+        );
+
+        // res.send(updateData);
+
+        if (updateData.rowCount <= 0) {
+            res.status(400).send();
+            return;
+        }
+
+        res.send({ present: false, empid: data.empid, checkoutDate });
+    } catch (error) {
+        res.status(400).send({ error });
+    }
+};
+
+const checkInTableDetails = async (req, res) => {
+    try {
+        const data = await conn.query("select * from tblstaffcheckin");
+
+        const checkInDetails = data.rows;
+        res.send(checkInDetails);
+    } catch (error) {
+        res.status(400).send({ error });
+    }
+};
+
+const applyLeave = async (req, res) => {
+    try {
+        const data = req.body;
+
+        const leaveDays = await conn.query(
+            "select * from tblleave where leavedate=$1 or leavedate=$2",
+            [data.fromdate, data.todate]
+        );
+
+        if (leaveDays.rowCount !== 0) {
+            return res.send({ offday: true });
+        }
+
+        const insertLeave = await conn.query(
+            "insert into tblstaffleave values($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)",
             [
-                empid,
-                fname,
-                gender,
-                dname,
-                email,
-                mobile,
-                dob,
-                jdate,
-                city,
-                state,
-                address,
-                password,
-                deptid,
+                data.empid,
+                data.deptid,
+                data.fname,
+                data.dname,
+                data.reason,
+                data.fromdate,
+                data.todate,
+                data.description,
+                data.appliedOn,
+                data.status,
             ]
         );
 
-        if (insert.rowCount <= 0) {
-            res.status(400).send({ message: "unable to insert" });
-            return;
-        }
-        res.send({ empid: staff.empid, inserted: true });
-    } catch (err) {
-        res.status(400).send({ err });
-    }
-};
+        // console.log(insertLeave);
 
-const GetStaff = async (req, res) => {
-    try {
-        const data = await conn.query("select * from tblstaff");
-
-        if (data.rowCount <= 0) {
-            res.status(404).send({ message: "not found" });
-            return;
+        if (insertLeave.rowCount <= 0) {
+            res.status(400).send({ error: "unable to add" });
+        } else {
+            res.send({
+                added: true,
+                empid: data.empid,
+                appliedOn: data.appliedOn,
+            });
         }
-        res.send(data.rows);
     } catch (error) {
-        return res.status(404).send({ error });
+        res.status(400).send({ error });
     }
 };
 
-const getSpecificStaff = async (req, res) => {
+const getLeaveData = async (req, res) => {
     try {
-        const empid = req.params.id;
-
-        const result = await conn.query(
-            "select * from tblstaff where empid=$1",
-            [empid]
+        const data = await conn.query(
+            "select * from tblstaffleave where empid=$1",
+            [req.params.empid]
         );
 
-        if (result.rowCount <= 0) {
-            res.status(404).send({ message: "not found!" });
-            return;
-        }
-
-        const sendingData = result.rows[0];
+        const sendingData = data.rows;
 
         res.send(sendingData);
-    } catch (error) {}
+    } catch (error) {
+        res.status(400).send({ error });
+    }
 };
 
-const getStaffUsingDname = async (req, res) => {
+const getApprovedLeave = async (req, res) => {
     try {
-        const dname = req.params.dname;
-
-        // console.log(dname);
-
-        const result = await conn.query(
-            "select * from tblstaff where dname=$1",
-            [dname]
+        const data = await conn.query(
+            "select * from tblstaffleave where empid=$1 and status='Approved'",
+            [req.params.empid]
         );
 
-        // console.log(result);
-        const sendingData = result.rows;
-
-        if (result.rowCount <= 0) {
-            // res.status(404).send({ message: "not found!" });
-            res.send(sendingData);
-            return;
-        }
+        const sendingData = data.rows;
 
         res.send(sendingData);
-    } catch (error) {}
-};
-
-const UpdateStaff = async (req, res) => {
-    try {
-        const staff = req.body;
-
-        empid = staff.empid;
-        fname = staff.fname;
-        gender = staff.gender;
-        dname = staff.dname;
-        email = staff.email;
-        mobile = staff.mobile;
-        dob = staff.dob;
-        jdate = staff.jdate;
-        city = staff.city;
-        state = staff.state;
-        address = staff.address;
-        password = staff.password;
-        deptid = staff.deptid;
-
-        const update = await conn.query(
-            "update tblstaff set fname=$1,gender=$2,dname=$3,email=$4,mobile=$5,dob=$6,jdate=$7,city=$8,state=$9,address=$10,password=$11,deptid=$12 where empid=$13",
-            [
-                fname,
-                gender,
-                dname,
-                email,
-                mobile,
-                dob,
-                jdate,
-                city,
-                state,
-                address,
-                password,
-                deptid,
-                empid,
-            ]
-        );
-
-        if (update.rowCount <= 0) {
-            res.status(404).send({ message: "not found!" });
-            return;
-        }
-
-        res.send({ empid: staff.empid, updated: true });
     } catch (error) {
-        return res.status(404).send({ error });
+        res.status(400).send({ error });
     }
 };
 
-const DeleteStaff = async (req, res) => {
-    try {
-        const empid = req.params.id;
-
-        const result = await conn.query("delete from tblstaff where empid=$1", [
-            empid,
-        ]);
-
-        if (result.rowCount <= 0) {
-            res.status(404).send({ message: "not found!" });
-            return;
-        }
-
-        res.send({ empid, deleted: true });
-    } catch (error) {
-        return res.status(404).send({ error });
-    }
-};
-
-const addLeave = async (req, res) => {
+const addAbsentData = async (req, res) => {
     try {
         const data = req.body;
+        const empid = data.empid;
+        const dateArr = data.date;
+        const month = data.month;
+        const year = data.year;
 
-        const addLeaveData = await conn.query(
-            "insert into tblleave values($1)",
-            [data.date]
+        const findData = await conn.query(
+            "select * from tblstaffabsent where empid=$1 and month=$2 and year=$3",
+            [empid, month, year]
         );
 
-        if (addLeaveData.rowCount <= 0) {
-            res.status(400).send({ error: "unable to insert" });
-            return;
+        // console.log(findData);
+
+        if (findData.rowCount <= 0) {
+            const insertData = await conn.query(
+                "insert into tblstaffabsent values($1,$2,$3,$4)",
+                [empid, dateArr, month, year]
+            );
+
+            if (insertData.rowCount <= 0) {
+                res.status(400).send();
+                return;
+            }
+
+            res.send({
+                added: true,
+            });
+        } else {
+            const updateData = await conn.query(
+                "update tblstaffabsent set date=$1 where empid=$2 and month=$3 and year=$4",
+                [dateArr, empid, month, year]
+            );
+
+            // if (updateData.rowCount <= 0) {
+            //     res.status(400).send();
+            //     return;
+            // }
+
+            res.send({
+                updated: true,
+            });
         }
-
-        res.send({ added: true });
-    } catch (error) {
-        return res.status(400).send({ error });
-    }
-};
-
-const removeLeave = async (req, res) => {
-    try {
-        const date = req.params.date;
-
-        // console.log(date);
-
-        const deleteLeave = await conn.query(
-            "delete from tblleave where leavedate=$1",
-            [date]
-        );
-
-        // console.log(deleteLeave);
-
-        if (deleteLeave.rowCount <= 0) {
-            res.send({ message: "not found!", deleted: false });
-            return;
-        }
-
-        res.send({ deleted: true });
-    } catch (error) {
-        return res.status(400).send({ error });
-    }
-};
-
-const getAllLeave = async (req, res) => {
-    try {
-        const leaveData = await conn.query("select * from tblleave");
-
-        if (leaveData.rowCount <= 0) {
-            res.status(404).send({ error: "not found!" });
-            return;
-        }
-
-        const data = leaveData.rows;
-
-        res.send(data);
     } catch (error) {
         res.status(400).send({ error });
     }
 };
 
-const getPendingStaffLeave = async (req, res) => {
+const getAbsentData = async (req, res) => {
     try {
-        const pendingLeaveData = await conn.query(
-            "select * from tblstaffleave where status='Pending'"
+        const data = await conn.query(
+            "select * from tblstaffabsent where empid=$1",
+            [req.params.empid]
         );
 
-        // console.log(pendingLeaveData);
+        // if (data.rowCount <= 0) {
+        //     res.status(404).send({ err: "not found!" });
+        //     return;
+        // }
 
-        const sendingData = pendingLeaveData.rows;
+        const sendingData = data.rows;
 
         res.send(sendingData);
-    } catch (error) {
-        res.status(400).send({ error });
-    }
-};
-
-const getApproveOrRejectStaffLeave = async (req, res) => {
-    try {
-        const approveOrRejectLeaveData = await conn.query(
-            "select * from tblstaffleave where status='Approved' or status='Rejected'"
-        );
-
-        // console.log(approveOrRejectLeaveData);
-
-        const sendingData = approveOrRejectLeaveData.rows;
-
-        res.send(sendingData);
-    } catch (error) {
-        res.status(400).send({ error });
-    }
-};
-
-const approveStaffLeave = async (req, res) => {
-    try {
-        const data = req.body;
-        // console.log(data);
-
-        fromdate = moment(data.fromdate).format("YYYY-MM-DD");
-
-        const approveStaffLeave = await conn.query(
-            "update tblstaffleave set status='Approved' where empid=$1 and fromdate=$2",
-            [data.empid, fromdate]
-        );
-
-        if (approveStaffLeave.rowCount <= 0) {
-            return res.status(400).send({ error: "unable to approve!" });
-        }
-
-        res.send({ approved: true, empid: data.empid });
-    } catch (error) {
-        res.status(400).send({ error });
-    }
-};
-
-const rejectStaffLeave = async (req, res) => {
-    try {
-        const data = req.body;
-        // console.log(data);
-
-        fromdate = moment(data.fromdate).format("YYYY-MM-DD");
-
-        const rejectStaffLeave = await conn.query(
-            "update tblstaffleave set status='Rejected' where empid=$1 and fromdate=$2",
-            [data.empid, fromdate]
-        );
-
-        if (rejectStaffLeave.rowCount <= 0) {
-            return res.status(400).send({ error: "unable to reject!" });
-        }
-
-        res.send({ rejected: true, empid: data.empid });
     } catch (error) {
         res.status(400).send({ error });
     }
 };
 
 module.exports = {
-    AddStaff,
-    GetStaff,
-    getSpecificStaff,
-    getStaffUsingDname,
-    UpdateStaff,
-    DeleteStaff,
-    addLeave,
-    getAllLeave,
-    removeLeave,
-    getPendingStaffLeave,
-    getApproveOrRejectStaffLeave,
-    approveStaffLeave,
-    rejectStaffLeave,
+    checkIn,
+    checkOut,
+    checkInTableDetails,
+    applyLeave,
+    getLeaveData,
+    getApprovedLeave,
+    addAbsentData,
+    getAbsentData,
 };
