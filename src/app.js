@@ -3,7 +3,7 @@ dotenv.config();
 const express = require("express");
 const app = express();
 let PORT = process.env.PORT || 3000;
-const adminRouter = require("../router/login");
+const loginRouter = require("../router/login");
 const tblmasterdeptRouter = require("../router/tblmasterdept");
 const adminStaffRouter = require("../router/adminstaff");
 const staffRouter = require("../router/staff");
@@ -17,7 +17,7 @@ const corsOption = {
 };
 app.use(cors(corsOption));
 
-app.use(adminRouter);
+app.use(loginRouter);
 app.use(tblmasterdeptRouter);
 app.use(adminStaffRouter);
 app.use(staffRouter);
