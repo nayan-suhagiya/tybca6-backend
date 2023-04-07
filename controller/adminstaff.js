@@ -330,6 +330,54 @@ const rejectStaffLeave = async (req, res) => {
     }
 };
 
+const addSalary = async (req, res) => {
+    try {
+        const data = req.body;
+        // console.log(data);
+
+        const insertData = await conn.query(
+            "insert into tblsalary values($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)",
+            [
+                data.empid,
+                data.basicSalary,
+                data.hra,
+                data.medicalAllow,
+                data.dearnessAllow,
+                data.grossSal,
+                data.epf,
+                data.healthInsurance,
+                data.tax,
+                data.deduction,
+                data.netPay,
+                data.salarydate,
+            ]
+        );
+
+        // console.log(insertData);
+        if (insertData.rowCount <= 0) {
+            return res.status(400).send({ error: "unable to insert!" });
+        }
+
+        res.send({ empid: data.empid, inserted: true });
+    } catch (error) {
+        res.status(400).send({ error });
+    }
+};
+
+const getSalary = async (req, res) => {
+    try {
+        const data = await conn.query("select * from tblsalary");
+
+        // console.log(data.rows);
+
+        const sendingData = data.rows;
+
+        res.send(sendingData);
+    } catch (error) {
+        res.status(400).send({ error });
+    }
+};
+
 module.exports = {
     AddStaff,
     GetStaff,
@@ -344,4 +392,6 @@ module.exports = {
     getApproveOrRejectStaffLeave,
     approveStaffLeave,
     rejectStaffLeave,
+    addSalary,
+    getSalary,
 };

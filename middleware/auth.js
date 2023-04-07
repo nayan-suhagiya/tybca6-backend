@@ -1,7 +1,7 @@
 const conn = require("../db/conn");
 const jwt = require("jsonwebtoken");
 
-const authAdmin = async (req, res, next) => {
+const auth = async (req, res, next) => {
     try {
         const token = req.header("Authorization").replace("Bearer ", "");
         const verify = jwt.verify(token, process.env.JWT_TOKEN_KEY);
@@ -47,4 +47,4 @@ const authAdmin = async (req, res, next) => {
     }
 };
 
-module.exports = authAdmin;
+module.exports = auth;

@@ -1,33 +1,35 @@
 const express = require("express");
 const router = new express.Router();
-const authAdmin = require("../middleware/authAdmin");
-const staff = require("../controller/adminstaff");
+const auth = require("../middleware/auth");
+const adminStaff = require("../controller/adminstaff");
 
-router.post("/admin/add-staff", authAdmin, staff.AddStaff);
-router.get("/admin/get-staff", authAdmin, staff.GetStaff);
-router.get("/admin/get-staff/:id", authAdmin, staff.getSpecificStaff);
+router.post("/admin/add-staff", auth, adminStaff.AddStaff);
+router.get("/admin/get-staff", auth, adminStaff.GetStaff);
+router.get("/admin/get-staff/:id", auth, adminStaff.getSpecificStaff);
 router.get(
     "/admin/get-staff-dname/:dname",
-    authAdmin,
-    staff.getStaffUsingDname
+    auth,
+    adminStaff.getStaffUsingDname
 );
-router.patch("/admin/update-staff", authAdmin, staff.UpdateStaff);
-router.delete("/admin/delete-staff/:id", authAdmin, staff.DeleteStaff);
+router.patch("/admin/update-staff", auth, adminStaff.UpdateStaff);
+router.delete("/admin/delete-staff/:id", auth, adminStaff.DeleteStaff);
 
-router.post("/admin/addleave", authAdmin, staff.addLeave);
-router.delete("/admin/removeleave/:date", authAdmin, staff.removeLeave);
-router.get("/admin/getall-leave", staff.getAllLeave);
+router.post("/admin/addleave", auth, adminStaff.addLeave);
+router.delete("/admin/removeleave/:date", auth, adminStaff.removeLeave);
+router.get("/admin/getall-leave", adminStaff.getAllLeave);
 
 router.get(
     "/admin/getpending-staffleave",
-    authAdmin,
-    staff.getPendingStaffLeave
+    auth,
+    adminStaff.getPendingStaffLeave
 );
 router.get(
     "/admin/getapproveorreject-staffleave",
-    authAdmin,
-    staff.getApproveOrRejectStaffLeave
+    auth,
+    adminStaff.getApproveOrRejectStaffLeave
 );
-router.patch("/admin/approve-staffleave", authAdmin, staff.approveStaffLeave);
-router.patch("/admin/reject-staffleave", authAdmin, staff.rejectStaffLeave);
+router.patch("/admin/approve-staffleave", auth, adminStaff.approveStaffLeave);
+router.patch("/admin/reject-staffleave", auth, adminStaff.rejectStaffLeave);
+router.post("/admin/add-salary", auth, adminStaff.addSalary);
+router.get("/admin/get-salary", auth, adminStaff.getSalary);
 module.exports = router;
