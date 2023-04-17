@@ -336,7 +336,7 @@ const addSalary = async (req, res) => {
         // console.log(data);
 
         const insertData = await conn.query(
-            "insert into tblsalary values($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)",
+            "insert into tblsalary values($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)",
             [
                 data.empid,
                 data.basicSalary,
@@ -350,6 +350,7 @@ const addSalary = async (req, res) => {
                 data.deduction,
                 data.netPay,
                 data.salarydate,
+                data.fname,
             ]
         );
 
@@ -378,6 +379,23 @@ const getSalary = async (req, res) => {
     }
 };
 
+const getSalaryForStaff = async (req, res) => {
+    try {
+        const data = await conn.query(
+            "select * from tblsalary where empid=$1",
+            [req.params.empid]
+        );
+
+        // console.log(data.rows);
+
+        const sendingData = data.rows;
+
+        res.send(sendingData);
+    } catch (error) {
+        res.status(400).send({ error });
+    }
+};
+
 module.exports = {
     AddStaff,
     GetStaff,
@@ -394,4 +412,5 @@ module.exports = {
     rejectStaffLeave,
     addSalary,
     getSalary,
+    getSalaryForStaff,
 };
