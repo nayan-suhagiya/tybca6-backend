@@ -33,5 +33,6 @@ router.patch("/admin/reject-staffleave", auth, adminStaff.rejectStaffLeave);
 router.post("/admin/add-salary", auth, adminStaff.addSalary);
 router.get("/admin/get-salary", auth, adminStaff.getSalary);
 router.get("/staff/get-salary/:empid", auth, adminStaff.getSalaryForStaff);
+router.post("/admin/send-mail", auth, adminStaff.sendMail);
 
 module.exports = router;
