@@ -18,8 +18,8 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 const AddStaff = async (req, res) => {
     try {
-        // res.send(req.body);
         const staff = req.body;
+        // console.log(staff);
 
         empid = staff.empid;
         fname = staff.fname;
@@ -54,6 +54,29 @@ const AddStaff = async (req, res) => {
             return;
         }
 
+        const emailValid = await conn.query(
+            "select * from tblstaff where email=$1",
+            [email]
+        );
+        if (emailValid.rowCount > 0) {
+            res.send({ empid: staff.empid, inserted: false, emailExist: true });
+            return;
+        }
+
+        const mobileValid = await conn.query(
+            "select * from tblstaff where mobile=$1",
+            [mobile]
+        );
+        if (mobileValid.rowCount > 0) {
+            res.send({
+                empid: staff.empid,
+                inserted: false,
+                emailValid: false,
+                mobileExist: true,
+            });
+            return;
+        }
+
         const insert = await conn.query(
             "insert into tblstaff values($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)",
             [
@@ -73,10 +96,30 @@ const AddStaff = async (req, res) => {
             ]
         );
 
+        // console.log(insert);
+
         if (insert.rowCount <= 0) {
             res.status(400).send({ message: "unable to insert" });
             return;
         }
+
+        const msg = {
+            to: `${email}`,
+            from: "suhagiya.nayan01@gmail.com",
+            subject: "Welcome to OFFICE MANAGEMENT SYSTEM!-@admin",
+            text: `Hello ${fname}`,
+            html: `<h2 style="color:green">Thanks for joining with us!</h2> <br> <strong>Your USERNAME or ID = ${empid}</strong> <br> <strong>Your PASSWORD = ${password}</strong>`,
+        };
+
+        await sgMail
+            .send(msg)
+            .then(() => {
+                console.log("add mail send!");
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+
         res.send({ empid: staff.empid, inserted: true });
     } catch (err) {
         res.status(400).send({ err });
@@ -159,31 +202,81 @@ const UpdateStaff = async (req, res) => {
         password = staff.password;
         deptid = staff.deptid;
 
-        const update = await conn.query(
-            "update tblstaff set fname=$1,gender=$2,dname=$3,email=$4,mobile=$5,dob=$6,jdate=$7,city=$8,state=$9,address=$10,password=$11,deptid=$12 where empid=$13",
-            [
-                fname,
-                gender,
-                dname,
-                email,
-                mobile,
-                dob,
-                jdate,
-                city,
-                state,
-                address,
-                password,
-                deptid,
-                empid,
-            ]
-        );
+        const data = await conn.query("select * from tblstaff where empid=$1", [
+            empid,
+        ]);
+        const mainData = data.rows[0];
 
-        if (update.rowCount <= 0) {
-            res.status(404).send({ message: "not found!" });
-            return;
+        if (email == mainData.email && mobile == mainData.mobile) {
+            const update = await conn.query(
+                "update tblstaff set fname=$1,gender=$2,dname=$3,email=$4,mobile=$5,dob=$6,jdate=$7,city=$8,state=$9,address=$10,password=$11,deptid=$12 where empid=$13",
+                [
+                    fname,
+                    gender,
+                    dname,
+                    email,
+                    mobile,
+                    dob,
+                    jdate,
+                    city,
+                    state,
+                    address,
+                    password,
+                    deptid,
+                    empid,
+                ]
+            );
+
+            if (update.rowCount <= 0) {
+                res.status(404).send({ message: "not found!" });
+                return;
+            }
+
+            res.send({ empid: staff.empid, updated: true });
+        } else {
+            const update = await conn.query(
+                "update tblstaff set fname=$1,gender=$2,dname=$3,email=$4,mobile=$5,dob=$6,jdate=$7,city=$8,state=$9,address=$10,password=$11,deptid=$12 where empid=$13",
+                [
+                    fname,
+                    gender,
+                    dname,
+                    email,
+                    mobile,
+                    dob,
+                    jdate,
+                    city,
+                    state,
+                    address,
+                    password,
+                    deptid,
+                    empid,
+                ]
+            );
+
+            if (update.rowCount <= 0) {
+                res.status(404).send({ message: "not found!" });
+                return;
+            }
+
+            const msg = {
+                to: `${email}`,
+                from: "suhagiya.nayan01@gmail.com",
+                subject: "OFFICE MANAGEMENT SYSTEM!-@admin",
+                text: `Hello ${fname}`,
+                html: `<h2 style="color:red">Your password is changed!</h2> <br> <strong>Your USERNAME or ID = ${empid}</strong> <br> <strong>Your PASSWORD = ${password}</strong>`,
+            };
+
+            await sgMail
+                .send(msg)
+                .then(() => {
+                    console.log("update mail send!");
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
+
+            res.send({ empid: staff.empid, updated: true });
         }
-
-        res.send({ empid: staff.empid, updated: true });
     } catch (error) {
         return res.status(404).send({ error });
     }
