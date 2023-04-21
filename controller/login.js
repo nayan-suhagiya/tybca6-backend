@@ -122,6 +122,7 @@ const LoginAdmin = async (req, res) => {
         res.status(400).send({ err: err.message });
     }
 };
+
 const LogoutAdmin = async (req, res) => {
     try {
         if (req.user[0]._id) {
@@ -146,4 +147,21 @@ const LogoutAdmin = async (req, res) => {
     }
 };
 
-module.exports = { LoginAdmin, LogoutAdmin };
+const UpdateAdminPassword = async (req, res) => {
+    try {
+        const updateData = await conn.query(
+            "update admin set password=$1 where username=$2",
+            [req.body.password, "admin"]
+        );
+
+        if (updateData.rowCount <= 0) {
+            return res.status(400).send({ err: "unable to update!" });
+        }
+
+        res.send({ updated: true });
+    } catch (err) {
+        res.status(400).send({ err });
+    }
+};
+
+module.exports = { LoginAdmin, LogoutAdmin, UpdateAdminPassword };
