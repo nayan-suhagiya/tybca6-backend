@@ -71,7 +71,7 @@ const AddStaff = async (req, res) => {
             res.send({
                 empid: staff.empid,
                 inserted: false,
-                emailValid: false,
+                emailExist: false,
                 mobileExist: true,
             });
             return;
