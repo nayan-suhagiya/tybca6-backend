@@ -1,5 +1,7 @@
 const conn = require("../db/conn.js");
 const jwt = require("jsonwebtoken");
+const sgMail = require("@sendgrid/mail");
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 const LoginAdmin = async (req, res) => {
     try {
@@ -164,4 +166,47 @@ const UpdateAdminPassword = async (req, res) => {
     }
 };
 
-module.exports = { LoginAdmin, LogoutAdmin, UpdateAdminPassword };
+const sendForgotMail = async (req, res) => {
+    try {
+        empid = req.body.empid;
+
+        const findData = await conn.query(
+            "select * from tblstaff where empid=$1",
+            [empid]
+        );
+
+        if (findData.rowCount <= 0) {
+            res.send({ userFound: false });
+            return;
+        }
+
+        const data = findData.rows[0];
+
+        const msg = {
+            to: `${data.email}`,
+            from: "suhagiya.nayan01@gmail.com",
+            subject: "OFFICE MANAGEMENT SYSTEM-@admin!",
+            html: `<h4>Your password is "${data.password}"</h4>`,
+        };
+
+        await sgMail
+            .send(msg)
+            .then(() => {
+                console.log("forgot mail send!");
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+
+        res.send({ userFound: true });
+    } catch (error) {
+        res.status(400).send({ error });
+    }
+};
+
+module.exports = {
+    LoginAdmin,
+    LogoutAdmin,
+    UpdateAdminPassword,
+    sendForgotMail,
+};
