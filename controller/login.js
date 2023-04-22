@@ -91,6 +91,7 @@ const LoginAdmin = async (req, res) => {
                     state: sendingData.state,
                     address: sendingData.address,
                     deptid: sendingData.deptid,
+                    profile: sendingData.profile,
                     token,
                     role: "user",
                 });
@@ -115,6 +116,7 @@ const LoginAdmin = async (req, res) => {
                     state: sendingData.state,
                     address: sendingData.address,
                     deptid: sendingData.deptid,
+                    profile: sendingData.profile,
                     token,
                     role: "user",
                 });
