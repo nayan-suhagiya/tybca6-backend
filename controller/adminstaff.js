@@ -35,6 +35,9 @@ const AddStaff = async (req, res) => {
         password = staff.password;
         deptid = staff.deptid;
         profile = staff.profileImg;
+        bankname = staff.bankname;
+        accountnumber = staff.accountnumber;
+        ifsccode = staff.ifsccode;
 
         if (
             !empid ||
@@ -49,6 +52,9 @@ const AddStaff = async (req, res) => {
             !state ||
             !address ||
             !password ||
+            !bankname ||
+            !accountnumber ||
+            !ifsccode ||
             !deptid
         ) {
             res.status(400).send({ message: "please provide all details" });
@@ -79,7 +85,7 @@ const AddStaff = async (req, res) => {
         }
 
         const insert = await conn.query(
-            "insert into tblstaff values($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)",
+            "insert into tblstaff values($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17)",
             [
                 empid,
                 fname,
@@ -95,6 +101,9 @@ const AddStaff = async (req, res) => {
                 password,
                 deptid,
                 profile,
+                bankname,
+                accountnumber,
+                ifsccode,
             ]
         );
 
@@ -204,6 +213,9 @@ const UpdateStaff = async (req, res) => {
         password = staff.password;
         deptid = staff.deptid;
         profile = staff.profile;
+        bankname = staff.bankname;
+        accountnumber = staff.accountnumber;
+        ifsccode = staff.ifsccode;
 
         const data = await conn.query("select * from tblstaff where empid=$1", [
             empid,
@@ -212,7 +224,7 @@ const UpdateStaff = async (req, res) => {
 
         if (email == mainData.email && mobile == mainData.mobile) {
             const update = await conn.query(
-                "update tblstaff set fname=$1,gender=$2,dname=$3,email=$4,mobile=$5,dob=$6,jdate=$7,city=$8,state=$9,address=$10,password=$11,deptid=$12,profile=$13 where empid=$14",
+                "update tblstaff set fname=$1,gender=$2,dname=$3,email=$4,mobile=$5,dob=$6,jdate=$7,city=$8,state=$9,address=$10,password=$11,deptid=$12,profile=$13,bankname=$14,accountnumber=$15,ifsccode=$16 where empid=$17",
                 [
                     fname,
                     gender,
@@ -227,6 +239,9 @@ const UpdateStaff = async (req, res) => {
                     password,
                     deptid,
                     profile,
+                    bankname,
+                    accountnumber,
+                    ifsccode,
                     empid,
                 ]
             );
@@ -239,7 +254,7 @@ const UpdateStaff = async (req, res) => {
             res.send({ empid: staff.empid, updated: true });
         } else {
             const update = await conn.query(
-                "update tblstaff set fname=$1,gender=$2,dname=$3,email=$4,mobile=$5,dob=$6,jdate=$7,city=$8,state=$9,address=$10,password=$11,deptid=$12,profile=$13 where empid=$14",
+                "update tblstaff set fname=$1,gender=$2,dname=$3,email=$4,mobile=$5,dob=$6,jdate=$7,city=$8,state=$9,address=$10,password=$11,deptid=$12,profile=$13,bankname=$14,accountnumber=$15,ifsccode=$16 where empid=$17",
                 [
                     fname,
                     gender,
@@ -254,6 +269,9 @@ const UpdateStaff = async (req, res) => {
                     password,
                     deptid,
                     profile,
+                    bankname,
+                    accountnumber,
+                    ifsccode,
                     empid,
                 ]
             );

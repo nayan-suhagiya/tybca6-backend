@@ -92,6 +92,9 @@ const LoginAdmin = async (req, res) => {
                     address: sendingData.address,
                     deptid: sendingData.deptid,
                     profile: sendingData.profile,
+                    bankname: sendingData.bankname,
+                    accountnumber: sendingData.accountnumber,
+                    ifsccode: sendingData.ifsccode,
                     token,
                     role: "user",
                 });
@@ -117,6 +120,9 @@ const LoginAdmin = async (req, res) => {
                     address: sendingData.address,
                     deptid: sendingData.deptid,
                     profile: sendingData.profile,
+                    bankname: sendingData.bankname,
+                    accountnumber: sendingData.accountnumber,
+                    ifsccode: sendingData.ifsccode,
                     token,
                     role: "user",
                 });
