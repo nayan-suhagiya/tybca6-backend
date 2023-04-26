@@ -12,5 +12,8 @@ router.get("/staff/get-applied-leave/:empid", auth, staff.getLeaveData);
 router.get("/staff/get-approved-leave/:empid", auth, staff.getApprovedLeave);
 router.post("/staff/add-absent", auth, staff.addAbsentData);
 router.get("/staff/get-absent/:empid", auth, staff.getAbsentData);
+router.post("/staff/add-work-detail", auth, staff.addWorkDetail);
+router.get("/staff/get-work-detail/:empid", auth, staff.getWorkDetails);
+router.get("/staff/get-work-detail", auth, staff.getWorkDetailsUsingDate);
 
 module.exports = router;

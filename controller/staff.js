@@ -208,6 +208,71 @@ const getAbsentData = async (req, res) => {
     }
 };
 
+const addWorkDetail = async (req, res) => {
+    try {
+        // console.log(req.body);
+        const data = req.body;
+        const empid = data.empid;
+        const date = data.date;
+        const worktype = data.worktype;
+        const hour = data.hour;
+        const comment = data.comment;
+
+        const addData = await conn.query(
+            "insert into tblstaffworkdetails values($1,$2,$3,$4,$5)",
+            [empid, date, worktype, hour, comment]
+        );
+
+        if (addData.rowCount <= 0) {
+            res.status(400).send({ error: "unable to add" });
+        } else {
+            res.send({
+                added: true,
+                empid,
+                worktype,
+            });
+        }
+    } catch (error) {
+        res.status(400).send({ error });
+    }
+};
+
+const getWorkDetails = async (req, res) => {
+    try {
+        const workData = await conn.query(
+            "select * from tblstaffworkdetails where empid=$1",
+            [req.params.empid]
+        );
+
+        // console.log(workData);
+
+        const sendingData = workData.rows;
+
+        res.send(sendingData);
+    } catch (error) {
+        res.status(400).send({ error });
+    }
+};
+
+const getWorkDetailsUsingDate = async (req, res) => {
+    try {
+        // console.log(req.query);
+        const data = req.query;
+
+        const workData = await conn.query(
+            "select * from tblstaffworkdetails where empid=$1 and date=$2",
+            [data.empid, data.date]
+        );
+
+        // console.log(workData);
+        const sendingData = workData.rows;
+
+        res.send(sendingData);
+    } catch (error) {
+        res.status(400).send({ error });
+    }
+};
+
 module.exports = {
     checkIn,
     checkOut,
@@ -217,4 +282,7 @@ module.exports = {
     getApprovedLeave,
     addAbsentData,
     getAbsentData,
+    addWorkDetail,
+    getWorkDetails,
+    getWorkDetailsUsingDate,
 };
