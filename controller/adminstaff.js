@@ -308,6 +308,7 @@ const UpdateStaff = async (req, res) => {
 const DeleteStaff = async (req, res) => {
     try {
         const empid = req.params.id;
+        console.log(empid);
 
         const result = await conn.query("delete from tblstaff where empid=$1", [
             empid,
