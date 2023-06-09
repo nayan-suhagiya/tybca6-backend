@@ -141,10 +141,10 @@ const GetStaff = async (req, res) => {
     try {
         const data = await conn.query("select * from tblstaff");
 
-        if (data.rowCount <= 0) {
-            res.status(404).send({ message: "not found" });
-            return;
-        }
+        // if (data.rowCount <= 0) {
+        //     res.status(404).send({ message: "not found" });
+        //     return;
+        // }
         res.send(data.rows);
     } catch (error) {
         return res.status(404).send({ error });

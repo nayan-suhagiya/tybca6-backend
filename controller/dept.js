@@ -25,10 +25,10 @@ const GetDept = async (req, res) => {
             "select * from tblmasterdept order by deptid"
         );
 
-        if (data.rowCount <= 0) {
-            res.status(404).send({ message: "data not found!" });
-            return;
-        }
+        // if (data.rowCount <= 0) {
+        //     res.status(404).send({ message: "data not found!" });
+        //     return;
+        // }
 
         res.send(data.rows);
     } catch (error) {
