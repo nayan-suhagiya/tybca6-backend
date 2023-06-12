@@ -710,6 +710,32 @@ const getSalary = async (req, res) => {
   }
 };
 
+const deleteSalary = async (req, res) => {
+  try {
+    // console.log(req.url.split("?")[1]);
+    // console.log(req.params.data);
+
+    const empid = req.params.data;
+    const salarydate = moment(req.url.split("?")[1]).format("YYYY-MM-DD");
+
+    console.log(empid, salarydate);
+
+    const deleteSalary = await conn.query(
+      "delete from tblsalary where empid=$1 and salarydate=$2",
+      [empid, salarydate]
+    );
+
+    if (deleteSalary.rowCount <= 0) {
+      res.send({ message: "not found!", deleted: false });
+      return;
+    }
+
+    res.send({ deleted: true });
+  } catch (error) {
+    res.status(400).send({ error });
+  }
+};
+
 const getSalaryForStaff = async (req, res) => {
   try {
     const data = await conn.query("select * from tblsalary where empid=$1", [
@@ -742,6 +768,7 @@ module.exports = {
   rejectStaffLeave,
   addSalary,
   getSalary,
+  deleteSalary,
   getSalaryForStaff,
   sendMail,
 };
