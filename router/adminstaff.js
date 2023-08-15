@@ -17,6 +17,7 @@ router.delete("/admin/delete-staff/:id", auth, adminStaff.DeleteStaff);
 router.post("/admin/addleave", auth, adminStaff.addLeave);
 router.delete("/admin/removeleave/:date", auth, adminStaff.removeLeave);
 router.get("/admin/getall-leave", adminStaff.getAllLeave);
+router.get("/staff/get-leave-by-date", auth, adminStaff.getLeaveDayByDate);
 
 router.get(
   "/admin/getpending-staffleave",
@@ -35,5 +36,6 @@ router.get("/admin/get-salary", auth, adminStaff.getSalary);
 router.delete("/admin/delete-salary/:data", auth, adminStaff.deleteSalary);
 router.get("/staff/get-salary/:empid", auth, adminStaff.getSalaryForStaff);
 router.post("/admin/send-mail", auth, adminStaff.sendMail);
+router.get("/admin/get-staff-work/:date", auth, adminStaff.getWorkDetails);
 
 module.exports = router;

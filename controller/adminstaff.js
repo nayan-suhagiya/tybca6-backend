@@ -383,6 +383,26 @@ const getAllLeave = async (req, res) => {
   }
 };
 
+const getLeaveDayByDate = async (req, res) => {
+  try {
+    // console.log(req.query.date);
+    const query = await conn.query(
+      "select * from tblleave where leavedate=$1",
+      [req.query.date]
+    );
+
+    // console.log(query);
+
+    if (query.rowCount == 0) {
+      res.status(200).send({ founded: false });
+    } else {
+      res.status(200).send({ founded: true });
+    }
+  } catch (error) {
+    res.status(400).send({ error });
+  }
+};
+
 const getPendingStaffLeave = async (req, res) => {
   try {
     const pendingLeaveData = await conn.query(
@@ -654,7 +674,7 @@ const addSalary = async (req, res) => {
 const sendMail = async (req, res) => {
   try {
     const data = req.body;
-    // console.log(data);
+    console.log(data);
 
     //send mail of salary pay
 
@@ -752,6 +772,21 @@ const getSalaryForStaff = async (req, res) => {
   }
 };
 
+const getWorkDetails = async (req, res) => {
+  try {
+    const data = await conn.query(
+      "select * from tblstaffworkdetails where date=$1",
+      [req.params.date]
+    );
+
+    const sendingData = data.rows;
+
+    res.send(sendingData);
+  } catch (error) {
+    res.status(400).send({ error });
+  }
+};
+
 module.exports = {
   AddStaff,
   GetStaff,
@@ -760,6 +795,7 @@ module.exports = {
   UpdateStaff,
   DeleteStaff,
   addLeave,
+  getLeaveDayByDate,
   getAllLeave,
   removeLeave,
   getPendingStaffLeave,
@@ -771,4 +807,5 @@ module.exports = {
   deleteSalary,
   getSalaryForStaff,
   sendMail,
+  getWorkDetails,
 };
