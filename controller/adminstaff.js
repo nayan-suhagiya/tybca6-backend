@@ -145,6 +145,8 @@ const GetStaff = async (req, res) => {
     //     res.status(404).send({ message: "not found" });
     //     return;
     // }
+
+    console.log(data.rows);
     res.send(data.rows);
   } catch (error) {
     return res.status(404).send({ error });
@@ -180,7 +182,7 @@ const getStaffUsingDname = async (req, res) => {
       dname,
     ]);
 
-    // console.log(result);
+    // console.log(result.rows);
     const sendingData = result.rows;
 
     if (result.rowCount <= 0) {
@@ -336,7 +338,7 @@ const addLeave = async (req, res) => {
       return;
     }
 
-    res.send({ added: true });
+    res.send({ inserted: true });
   } catch (error) {
     return res.status(400).send({ error });
   }
@@ -376,6 +378,7 @@ const getAllLeave = async (req, res) => {
     }
 
     const data = leaveData.rows;
+    console.log(data);
 
     res.send(data);
   } catch (error) {
@@ -412,7 +415,7 @@ const getPendingStaffLeave = async (req, res) => {
     // console.log(pendingLeaveData);
 
     const sendingData = pendingLeaveData.rows;
-
+    console.log(sendingData);
     res.send(sendingData);
   } catch (error) {
     res.status(400).send({ error });
@@ -429,6 +432,7 @@ const getApproveOrRejectStaffLeave = async (req, res) => {
 
     const sendingData = approveOrRejectLeaveData.rows;
 
+    console.log(sendingData);
     res.send(sendingData);
   } catch (error) {
     res.status(400).send({ error });
@@ -473,7 +477,7 @@ const rejectStaffLeave = async (req, res) => {
       return res.status(400).send({ error: "unable to reject!" });
     }
 
-    res.send({ rejected: true, empid: data.empid });
+    res.send({ approved: false, empid: data.empid });
   } catch (error) {
     res.status(400).send({ error });
   }
@@ -724,6 +728,7 @@ const getSalary = async (req, res) => {
 
     const sendingData = data.rows;
 
+    console.log(sendingData);
     res.send(sendingData);
   } catch (error) {
     res.status(400).send({ error });
@@ -781,6 +786,7 @@ const getWorkDetails = async (req, res) => {
 
     const sendingData = data.rows;
 
+    console.log(sendingData);
     res.send(sendingData);
   } catch (error) {
     res.status(400).send({ error });
