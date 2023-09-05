@@ -21,9 +21,6 @@ const checkIn = async (req, res) => {
 
     res.send({
       present: true,
-      empid: data.empid,
-      checkinDate,
-      token: req.token,
     });
   } catch (error) {
     res.status(400).send({ error });
@@ -47,7 +44,7 @@ const checkOut = async (req, res) => {
       return;
     }
 
-    res.send({ present: false, empid: data.empid, checkoutDate });
+    res.send({ present: false });
   } catch (error) {
     res.status(400).send({ error });
   }
@@ -58,6 +55,7 @@ const checkInTableDetails = async (req, res) => {
     const data = await conn.query("select * from tblstaffcheckin");
 
     const checkInDetails = data.rows;
+    // console.log(checkInDetails);
     res.send(checkInDetails);
   } catch (error) {
     res.status(400).send({ error });
@@ -99,9 +97,8 @@ const applyLeave = async (req, res) => {
       res.status(400).send({ error: "unable to add" });
     } else {
       res.send({
-        added: true,
+        approved: true,
         empid: data.empid,
-        appliedOn: data.appliedOn,
       });
     }
   } catch (error) {
@@ -118,6 +115,7 @@ const getLeaveData = async (req, res) => {
 
     const sendingData = data.rows;
 
+    console.log(sendingData);
     res.send(sendingData);
   } catch (error) {
     res.status(400).send({ error });
@@ -133,6 +131,7 @@ const getApprovedLeave = async (req, res) => {
 
     const sendingData = data.rows;
 
+    // console.log(sendingData);
     res.send(sendingData);
   } catch (error) {
     res.status(400).send({ error });
@@ -174,11 +173,6 @@ const addAbsentData = async (req, res) => {
         [dateArr, empid, month, year]
       );
 
-      // if (updateData.rowCount <= 0) {
-      //     res.status(400).send();
-      //     return;
-      // }
-
       res.send({
         updated: true,
       });
@@ -201,7 +195,7 @@ const getAbsentData = async (req, res) => {
     // }
 
     const sendingData = data.rows;
-
+    // console.log(sendingData);
     res.send(sendingData);
   } catch (error) {
     res.status(400).send({ error });
@@ -220,8 +214,8 @@ const deleteLeave = async (req, res) => {
 
     // console.log(deleteLeave);
 
-    if(deleteLeave.rowCount > 0){
-        res.send({deleted:true})
+    if (deleteLeave.rowCount > 0) {
+      res.send({ deleted: true });
     }
   } catch (error) {
     res.status(400).send({ error });
@@ -247,9 +241,7 @@ const addWorkDetail = async (req, res) => {
       res.status(400).send({ error: "unable to add" });
     } else {
       res.send({
-        added: true,
-        empid,
-        worktype,
+        inserted: true,
       });
     }
   } catch (error) {
