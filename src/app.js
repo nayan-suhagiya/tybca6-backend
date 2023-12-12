@@ -11,9 +11,9 @@ app.use(express.json());
 const cors = require("cors");
 
 const corsOption = {
-    origin: "*",
-    credentials: true,
-    optionSuccessStatus: 200,
+  origin: "*",
+  credentials: true,
+  optionSuccessStatus: 200,
 };
 app.use(cors(corsOption));
 
@@ -23,5 +23,5 @@ app.use(adminStaffRouter);
 app.use(staffRouter);
 
 app.listen(PORT, () => {
-    console.log(`server running on ${PORT}`);
+  console.log(`server running on ${PORT}`);
 });
