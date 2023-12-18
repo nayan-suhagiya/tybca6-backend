@@ -1,5 +1,3 @@
-const dotenv = require("dotenv");
-dotenv.config();
 const express = require("express");
 const cors = require("cors");
 const app = express();
@@ -11,7 +9,7 @@ const staffRouter = require("../router/staff");
 app.use(express.json());
 
 const corsOption = {
-  origin: process.env.ALLOWED_ORIGIN,
+  origin: "*",
   credentials: true,
   optionSuccessStatus: 200,
 };

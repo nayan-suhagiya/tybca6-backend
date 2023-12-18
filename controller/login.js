@@ -39,7 +39,7 @@ const LoginAdmin = async (req, res) => {
 
       const token = await jwt.sign(
         { _id: 21410159 },
-        process.env.JWT_TOKEN_KEY
+        "secret-key-for-generate-auth-token"
       );
 
       // console.log(token);
@@ -67,7 +67,7 @@ const LoginAdmin = async (req, res) => {
 
       const token = jwt.sign(
         { _id: data.rows[0].empid },
-        process.env.JWT_TOKEN_KEY
+        "secret-key-for-generate-auth-token"
       );
 
       // console.log(token);
