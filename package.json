@@ -19,6 +19,7 @@
         "jsonwebtoken": "^9.0.0",
         "lzutf8": "^0.6.3",
         "moment": "^2.29.4",
+        "nodemailer": "^6.9.7",
         "pdfmake": "^0.2.7",
         "pg": "^8.9.0"
     }

@@ -2,6 +2,7 @@ const conn = require("../db/conn");
 const moment = require("moment");
 
 const pdfmake = require("pdfmake");
+const nodemailer = require("nodemailer");
 const fs = require("fs");
 const fonts = {
   Roboto: {
@@ -13,8 +14,15 @@ const fonts = {
 };
 const printer = new pdfmake(fonts);
 
-const sgMail = require("@sendgrid/mail");
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+// const sgMail = require("@sendgrid/mail");
+// sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: "nickpatel734@gmail.com",
+    pass: "piiv mlts wfwt jtdp",
+  },
+});
 
 const AddStaff = async (req, res) => {
   try {
@@ -114,24 +122,39 @@ const AddStaff = async (req, res) => {
       return;
     }
 
-    const msg = {
+    const mailOptions = {
+      from: "nickpatel734@gmail.com",
       to: `${email}`,
-      from: "suhagiya.nayan01@gmail.com",
-      subject: "Welcome to OFFICE MANAGEMENT SYSTEM!-@admin",
+      subject: "Welcome to OFFICE MANAGEMENT SYSTEM-oms@admin.com",
       text: `Hello ${fname}`,
       html: `<h2 style="color:green">Thanks for joining with us!</h2> <br> <strong>Your USERNAME or ID = ${empid}</strong> <br> <strong>Your PASSWORD = ${password}</strong>`,
     };
 
-    await sgMail
-      .send(msg)
-      .then(() => {
-        console.log("add mail send!");
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    // const msg = {
+    //   to: `${email}`,
+    //   from: "suhagiya.nayan01@gmail.com",
+    //   subject: "Welcome to OFFICE MANAGEMENT SYSTEM!-@admin",
+    //   text: `Hello ${fname}`,
+    //   html: `<h2 style="color:green">Thanks for joining with us!</h2> <br> <strong>Your USERNAME or ID = ${empid}</strong> <br> <strong>Your PASSWORD = ${password}</strong>`,
+    // };
 
-    res.send({ empid: staff.empid, inserted: true });
+    // await sgMail
+    //   .send(msg)
+    //   .then(() => {
+    //     console.log("add mail send!");
+    //   })
+    //   .catch((err) => {
+    //     console.log(err);
+    //   });
+
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        return console.error(error.message);
+      }
+      // console.log("Email sent: " + info.response);
+      console.log("mail send!" + info.response);
+      res.send({ empid: staff.empid, inserted: true });
+    });
   } catch (err) {
     res.status(400).send({ err });
   }
@@ -281,24 +304,38 @@ const UpdateStaff = async (req, res) => {
         return;
       }
 
-      const msg = {
+      const mailOptions = {
+        from: "nickpatel734@gmail.com",
         to: `${email}`,
-        from: "suhagiya.nayan01@gmail.com",
-        subject: "OFFICE MANAGEMENT SYSTEM!-@admin",
+        subject: "OFFICE MANAGEMENT SYSTEM-oms@admin.com",
         text: `Hello ${fname}`,
         html: `<h2 style="color:red">Your password is changed!</h2> <br> <strong>Your USERNAME or ID = ${empid}</strong> <br> <strong>Your PASSWORD = ${password}</strong>`,
       };
 
-      await sgMail
-        .send(msg)
-        .then(() => {
-          console.log("update mail send!");
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+      // const msg = {
+      //   to: `${email}`,
+      //   from: "suhagiya.nayan01@gmail.com",
+      //   subject: "OFFICE MANAGEMENT SYSTEM!-@admin",
+      //   text: `Hello ${fname}`,
+      //   html: `<h2 style="color:red">Your password is changed!</h2> <br> <strong>Your USERNAME or ID = ${empid}</strong> <br> <strong>Your PASSWORD = ${password}</strong>`,
+      // };
 
-      res.send({ empid: staff.empid, updated: true });
+      // await sgMail
+      //   .send(msg)
+      //   .then(() => {
+      //     console.log("update mail send!");
+      //   })
+      //   .catch((err) => {
+      //     console.log(err);
+      //   });
+
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          return console.error(error.message);
+        }
+        console.log("mail send!" + info.response);
+        res.send({ empid: staff.empid, updated: true });
+      });
     }
   } catch (error) {
     return res.status(404).send({ error });
@@ -689,32 +726,53 @@ const sendMail = async (req, res) => {
       }.pdf`;
     attachment = fs.readFileSync(pathToAttachment).toString("base64");
 
-    const msg = {
+    const mailOptions = {
+      from: "nickpatel734@gmail.com",
       to: `${data.email}`,
-      from: "suhagiya.nayan01@gmail.com",
-      subject: "From-Office Management System@admin!",
-      text: `Hello ${data.fname}`,
+      subject: "Salary slip - From : oms@admin.com",
       html: "<strong>Your salary for this month is paid! Please download salary slip from the this email or your dashboard!</strong>",
       attachments: [
         {
-          content: attachment,
-          filename: "salary-slip",
-          type: "application/pdf",
-          disposition: "attachment",
+          filename: "salary-slip.pdf",
+          path: pathToAttachment, // Replace with the actual path to your PDF file
         },
       ],
     };
 
-    await sgMail
-      .send(msg)
-      .then(() => {
-        console.log("mail send!");
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    // Send the email
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        return console.error(error.message);
+      }
+      // console.log("Email sent: " + info.response);
+      console.log("mail send!" + info.response);
+      res.send({ mailSend: true });
+    });
 
-    res.send({ mailSend: true });
+    // const msg = {
+    //   to: `${data.email}`,
+    //   from: "suhagiya.nayan01@gmail.com",
+    //   subject: "From-Office Management System@admin!",
+    //   text: `Hello ${data.fname}`,
+    //   html: "<strong>Your salary for this month is paid! Please download salary slip from the this email or your dashboard!</strong>",
+    //   attachments: [
+    //     {
+    //       content: attachment,
+    //       filename: "salary-slip",
+    //       type: "application/pdf",
+    //       disposition: "attachment",
+    //     },
+    //   ],
+    // };
+
+    // await sgMail
+    //   .send(msg)
+    //   .then(() => {
+    //     console.log("mail send!");
+    //   })
+    //   .catch((error) => {
+    //     console.log(error);
+    //   });
   } catch (error) {
     res.status(400).send({ error });
   }

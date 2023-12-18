@@ -1,7 +1,16 @@
 const conn = require("../db/conn.js");
 const jwt = require("jsonwebtoken");
-const sgMail = require("@sendgrid/mail");
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+const nodemailer = require("nodemailer");
+// const sgMail = require("@sendgrid/mail");
+// sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: "nickpatel734@gmail.com",
+    pass: "piiv mlts wfwt jtdp",
+  },
+});
 
 const LoginAdmin = async (req, res) => {
   try {
@@ -188,23 +197,37 @@ const sendForgotMail = async (req, res) => {
 
     const data = findData.rows[0];
 
-    const msg = {
+    const mailOptions = {
+      from: "nickpatel734@gmail.com",
       to: `${data.email}`,
-      from: "suhagiya.nayan01@gmail.com",
-      subject: "OFFICE MANAGEMENT SYSTEM-@admin!",
+      subject: "OFFICE MANAGEMENT SYSTEM-oms@admin.com",
+      text: `Hello ${data.fname}`,
       html: `<h4>Your password is "${data.password}"</h4>`,
     };
 
-    await sgMail
-      .send(msg)
-      .then(() => {
-        console.log("forgot mail send!");
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    // const msg = {
+    //   to: `${data.email}`,
+    //   from: "suhagiya.nayan01@gmail.com",
+    //   subject: "OFFICE MANAGEMENT SYSTEM-@admin!",
+    //   html: `<h4>Your password is "${data.password}"</h4>`,
+    // };
 
-    res.send({ mailSend: true });
+    // await sgMail
+    //   .send(msg)
+    //   .then(() => {
+    //     console.log("forgot mail send!");
+    //   })
+    //   .catch((err) => {
+    //     console.log(err);
+    //   });
+
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        return console.error(error.message);
+      }
+      console.log("mail send!" + info.response);
+      res.send({ mailSend: true });
+    });
   } catch (error) {
     res.status(400).send({ error });
   }
