@@ -1,6 +1,7 @@
 const dotenv = require("dotenv");
 dotenv.config();
 const express = require("express");
+const cors = require("cors");
 const app = express();
 let PORT = process.env.PORT || 3000;
 const loginRouter = require("../router/login");
@@ -8,10 +9,9 @@ const tblmasterdeptRouter = require("../router/tblmasterdept");
 const adminStaffRouter = require("../router/adminstaff");
 const staffRouter = require("../router/staff");
 app.use(express.json());
-const cors = require("cors");
 
 const corsOption = {
-  origin: "*",
+  origin: process.env.ALLOWED_ORIGIN,
   credentials: true,
   optionSuccessStatus: 200,
 };

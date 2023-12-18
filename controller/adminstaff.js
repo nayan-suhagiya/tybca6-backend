@@ -698,7 +698,7 @@ const sendMail = async (req, res) => {
       attachments: [
         {
           content: attachment,
-          filename: "salary-slip.pdf",
+          filename: "salary-slip",
           type: "application/pdf",
           disposition: "attachment",
         },
