@@ -19,8 +19,8 @@ const printer = new pdfmake(fonts);
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    user: "nickpatel734@gmail.com",
-    pass: "piiv mlts wfwt jtdp",
+    user: "theteamproject06@gmail.com",
+    pass: "pvap eziu zthz syru",
   },
 });
 
