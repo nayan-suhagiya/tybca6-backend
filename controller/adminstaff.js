@@ -14,8 +14,6 @@ const fonts = {
 };
 const printer = new pdfmake(fonts);
 
-// const sgMail = require("@sendgrid/mail");
-// sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
@@ -27,7 +25,6 @@ const transporter = nodemailer.createTransport({
 const AddStaff = async (req, res) => {
   try {
     const staff = req.body;
-    // console.log(staff);
 
     empid = staff.empid;
     fname = staff.fname;
@@ -115,8 +112,6 @@ const AddStaff = async (req, res) => {
       ]
     );
 
-    // console.log(insert);
-
     if (insert.rowCount <= 0) {
       res.status(400).send({ message: "unable to insert" });
       return;
@@ -130,29 +125,10 @@ const AddStaff = async (req, res) => {
       html: `<h2 style="color:green">Thanks for joining with us!</h2> <br> <strong>Your USERNAME or ID = ${empid}</strong> <br> <strong>Your PASSWORD = ${password}</strong>`,
     };
 
-    // const msg = {
-    //   to: `${email}`,
-    //   from: "suhagiya.nayan01@gmail.com",
-    //   subject: "Welcome to OFFICE MANAGEMENT SYSTEM!-@admin",
-    //   text: `Hello ${fname}`,
-    //   html: `<h2 style="color:green">Thanks for joining with us!</h2> <br> <strong>Your USERNAME or ID = ${empid}</strong> <br> <strong>Your PASSWORD = ${password}</strong>`,
-    // };
-
-    // await sgMail
-    //   .send(msg)
-    //   .then(() => {
-    //     console.log("add mail send!");
-    //   })
-    //   .catch((err) => {
-    //     console.log(err);
-    //   });
-
     transporter.sendMail(mailOptions, (error, info) => {
       if (error) {
         return console.error(error.message);
       }
-      // console.log("Email sent: " + info.response);
-      console.log("mail send!" + info.response);
       res.send({ empid: staff.empid, inserted: true });
     });
   } catch (err) {
@@ -164,12 +140,6 @@ const GetStaff = async (req, res) => {
   try {
     const data = await conn.query("select * from tblstaff");
 
-    // if (data.rowCount <= 0) {
-    //     res.status(404).send({ message: "not found" });
-    //     return;
-    // }
-
-    console.log(data.rows);
     res.send(data.rows);
   } catch (error) {
     return res.status(404).send({ error });
@@ -199,17 +169,13 @@ const getStaffUsingDname = async (req, res) => {
   try {
     const dname = req.params.dname;
 
-    // console.log(dname);
-
     const result = await conn.query("select * from tblstaff where dname=$1", [
       dname,
     ]);
 
-    // console.log(result.rows);
     const sendingData = result.rows;
 
     if (result.rowCount <= 0) {
-      // res.status(404).send({ message: "not found!" });
       res.send(sendingData);
       return;
     }
@@ -311,29 +277,10 @@ const UpdateStaff = async (req, res) => {
         text: `Hello ${fname}`,
         html: `<h2 style="color:red">Your password is changed!</h2> <br> <strong>Your USERNAME or ID = ${empid}</strong> <br> <strong>Your PASSWORD = ${password}</strong>`,
       };
-
-      // const msg = {
-      //   to: `${email}`,
-      //   from: "suhagiya.nayan01@gmail.com",
-      //   subject: "OFFICE MANAGEMENT SYSTEM!-@admin",
-      //   text: `Hello ${fname}`,
-      //   html: `<h2 style="color:red">Your password is changed!</h2> <br> <strong>Your USERNAME or ID = ${empid}</strong> <br> <strong>Your PASSWORD = ${password}</strong>`,
-      // };
-
-      // await sgMail
-      //   .send(msg)
-      //   .then(() => {
-      //     console.log("update mail send!");
-      //   })
-      //   .catch((err) => {
-      //     console.log(err);
-      //   });
-
       transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
           return console.error(error.message);
         }
-        console.log("mail send!" + info.response);
         res.send({ empid: staff.empid, updated: true });
       });
     }
@@ -345,7 +292,6 @@ const UpdateStaff = async (req, res) => {
 const DeleteStaff = async (req, res) => {
   try {
     const empid = req.params.id;
-    console.log(empid);
 
     const result = await conn.query("delete from tblstaff where empid=$1", [
       empid,
@@ -385,14 +331,10 @@ const removeLeave = async (req, res) => {
   try {
     const date = req.params.date;
 
-    // console.log(date);
-
     const deleteLeave = await conn.query(
       "delete from tblleave where leavedate=$1",
       [date]
     );
-
-    // console.log(deleteLeave);
 
     if (deleteLeave.rowCount <= 0) {
       res.send({ message: "not found!", deleted: false });
@@ -415,7 +357,6 @@ const getAllLeave = async (req, res) => {
     }
 
     const data = leaveData.rows;
-    console.log(data);
 
     res.send(data);
   } catch (error) {
@@ -425,13 +366,10 @@ const getAllLeave = async (req, res) => {
 
 const getLeaveDayByDate = async (req, res) => {
   try {
-    // console.log(req.query.date);
     const query = await conn.query(
       "select * from tblleave where leavedate=$1",
       [req.query.date]
     );
-
-    // console.log(query);
 
     if (query.rowCount == 0) {
       res.status(200).send({ founded: false });
@@ -449,8 +387,6 @@ const getPendingStaffLeave = async (req, res) => {
       "select * from tblstaffleave where status='Pending'"
     );
 
-    // console.log(pendingLeaveData);
-
     const sendingData = pendingLeaveData.rows;
     console.log(sendingData);
     res.send(sendingData);
@@ -465,8 +401,6 @@ const getApproveOrRejectStaffLeave = async (req, res) => {
       "select * from tblstaffleave where status='Approved' or status='Rejected'"
     );
 
-    // console.log(approveOrRejectLeaveData);
-
     const sendingData = approveOrRejectLeaveData.rows;
 
     console.log(sendingData);
@@ -479,7 +413,6 @@ const getApproveOrRejectStaffLeave = async (req, res) => {
 const approveStaffLeave = async (req, res) => {
   try {
     const data = req.body;
-    // console.log(data);
 
     fromdate = moment(data.fromdate).format("YYYY-MM-DD");
 
@@ -501,7 +434,6 @@ const approveStaffLeave = async (req, res) => {
 const rejectStaffLeave = async (req, res) => {
   try {
     const data = req.body;
-    // console.log(data);
 
     fromdate = moment(data.fromdate).format("YYYY-MM-DD");
 
@@ -529,7 +461,6 @@ const addSalary = async (req, res) => {
     );
 
     const userdata = userquery.rows[0];
-    // console.log(data);
 
     const insertData = await conn.query(
       "insert into tblsalary values($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)",
@@ -552,7 +483,6 @@ const addSalary = async (req, res) => {
       ]
     );
 
-    // console.log(insertData);
     if (insertData.rowCount <= 0) {
       return res.status(400).send({ error: "unable to insert!" });
     }
@@ -695,7 +625,6 @@ const addSalary = async (req, res) => {
     };
 
     let pdf = printer.createPdfKitDocument(pdfDefinition);
-    // console.log(pdf);
     await pdf.pipe(
       fs.createWriteStream(
         "salary-slips/" +
@@ -717,8 +646,6 @@ const sendMail = async (req, res) => {
     const data = req.body;
     console.log(data);
 
-    //send mail of salary pay
-
     pathToAttachment =
       "salary-slips/" +
       `Salary-${moment(data.salarydate).format("DD-MM-YYYY")}-${
@@ -734,45 +661,17 @@ const sendMail = async (req, res) => {
       attachments: [
         {
           filename: "salary-slip.pdf",
-          path: pathToAttachment, // Replace with the actual path to your PDF file
+          path: pathToAttachment,
         },
       ],
     };
 
-    // Send the email
     transporter.sendMail(mailOptions, (error, info) => {
       if (error) {
         return console.error(error.message);
       }
-      // console.log("Email sent: " + info.response);
-      console.log("mail send!" + info.response);
       res.send({ mailSend: true });
     });
-
-    // const msg = {
-    //   to: `${data.email}`,
-    //   from: "suhagiya.nayan01@gmail.com",
-    //   subject: "From-Office Management System@admin!",
-    //   text: `Hello ${data.fname}`,
-    //   html: "<strong>Your salary for this month is paid! Please download salary slip from the this email or your dashboard!</strong>",
-    //   attachments: [
-    //     {
-    //       content: attachment,
-    //       filename: "salary-slip",
-    //       type: "application/pdf",
-    //       disposition: "attachment",
-    //     },
-    //   ],
-    // };
-
-    // await sgMail
-    //   .send(msg)
-    //   .then(() => {
-    //     console.log("mail send!");
-    //   })
-    //   .catch((error) => {
-    //     console.log(error);
-    //   });
   } catch (error) {
     res.status(400).send({ error });
   }
@@ -782,11 +681,8 @@ const getSalary = async (req, res) => {
   try {
     const data = await conn.query("select * from tblsalary");
 
-    // console.log(data.rows);
-
     const sendingData = data.rows;
 
-    console.log(sendingData);
     res.send(sendingData);
   } catch (error) {
     res.status(400).send({ error });
@@ -795,9 +691,6 @@ const getSalary = async (req, res) => {
 
 const deleteSalary = async (req, res) => {
   try {
-    // console.log(req.url.split("?")[1]);
-    // console.log(req.params.data);
-
     const empid = req.params.data;
     const salarydate = moment(req.url.split("?")[1]).format("YYYY-MM-DD");
 
@@ -825,8 +718,6 @@ const getSalaryForStaff = async (req, res) => {
       req.params.empid,
     ]);
 
-    // console.log(data.rows);
-
     const sendingData = data.rows;
 
     res.send(sendingData);
@@ -844,7 +735,6 @@ const getWorkDetails = async (req, res) => {
 
     const sendingData = data.rows;
 
-    console.log(sendingData);
     res.send(sendingData);
   } catch (error) {
     res.status(400).send({ error });

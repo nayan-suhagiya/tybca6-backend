@@ -6,10 +6,7 @@ const auth = async (req, res, next) => {
     const token = req.header("Authorization").replace("Bearer ", "");
     const verify = jwt.verify(token, "secret-key-for-generate-auth-token");
 
-    // res.send(verify._id);
-
     if (verify._id == 21410159) {
-      // res.send({ _id: verify._id });
       const data = await conn.query("select * from admin where _id=$1", [
         verify._id,
       ]);
@@ -30,16 +27,12 @@ const auth = async (req, res, next) => {
       [verify._id, token]
     );
 
-    // res.send(stafflogindata);
-
     if (stafflogindata.rowCount <= 0) {
       return res.status(401).send({ err: "Please authenticate!" });
     }
 
     req.user = stafflogindata.rows;
     req.token = token;
-
-    // res.send();
 
     next();
   } catch (err) {

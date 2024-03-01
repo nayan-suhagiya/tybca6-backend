@@ -25,11 +25,6 @@ const GetDept = async (req, res) => {
       "select * from tblmasterdept order by deptid"
     );
 
-    // if (data.rowCount <= 0) {
-    //     res.status(404).send({ message: "data not found!" });
-    //     return;
-    // }
-
     res.send(data.rows);
   } catch (error) {
     return res.status(400).send({ error });
@@ -38,7 +33,6 @@ const GetDept = async (req, res) => {
 
 const UpdateDept = async (req, res) => {
   try {
-    // res.send(req.body);
     const deptid = req.body.deptid;
     const dname = req.body.dname;
 
@@ -63,7 +57,6 @@ const UpdateDept = async (req, res) => {
 
 const DeleteDept = async (req, res) => {
   try {
-    // res.send(req.body);
     const deptid = req.params.id;
 
     if (!deptid) {

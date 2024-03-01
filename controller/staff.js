@@ -12,8 +12,6 @@ const checkIn = async (req, res) => {
       [data.empid, checkinDate, date, req.token]
     );
 
-    // res.send(insertData);
-
     if (insertData.rowCount <= 0) {
       res.status(400).send();
       return;
@@ -37,8 +35,6 @@ const checkOut = async (req, res) => {
       [checkoutDate, req.token, data.empid, data.date]
     );
 
-    // res.send(updateData);
-
     if (updateData.rowCount <= 0) {
       res.status(400).send();
       return;
@@ -55,7 +51,6 @@ const checkInTableDetails = async (req, res) => {
     const data = await conn.query("select * from tblstaffcheckin");
 
     const checkInDetails = data.rows;
-    // console.log(checkInDetails);
     res.send(checkInDetails);
   } catch (error) {
     res.status(400).send({ error });
@@ -91,8 +86,6 @@ const applyLeave = async (req, res) => {
       ]
     );
 
-    // console.log(insertLeave);
-
     if (insertLeave.rowCount <= 0) {
       res.status(400).send({ error: "unable to add" });
     } else {
@@ -115,7 +108,6 @@ const getLeaveData = async (req, res) => {
 
     const sendingData = data.rows;
 
-    console.log(sendingData);
     res.send(sendingData);
   } catch (error) {
     res.status(400).send({ error });
@@ -131,7 +123,6 @@ const getApprovedLeave = async (req, res) => {
 
     const sendingData = data.rows;
 
-    // console.log(sendingData);
     res.send(sendingData);
   } catch (error) {
     res.status(400).send({ error });
@@ -150,8 +141,6 @@ const addAbsentData = async (req, res) => {
       "select * from tblstaffabsent where empid=$1 and month=$2 and year=$3",
       [empid, month, year]
     );
-
-    // console.log(findData);
 
     if (findData.rowCount <= 0) {
       const insertData = await conn.query(
@@ -189,13 +178,7 @@ const getAbsentData = async (req, res) => {
       [req.params.empid]
     );
 
-    // if (data.rowCount <= 0) {
-    //     res.status(404).send({ err: "not found!" });
-    //     return;
-    // }
-
     const sendingData = data.rows;
-    // console.log(sendingData);
     res.send(sendingData);
   } catch (error) {
     res.status(400).send({ error });
@@ -212,8 +195,6 @@ const deleteLeave = async (req, res) => {
       [empid, fromdate]
     );
 
-    // console.log(deleteLeave);
-
     if (deleteLeave.rowCount > 0) {
       res.send({ deleted: true });
     }
@@ -224,7 +205,6 @@ const deleteLeave = async (req, res) => {
 
 const addWorkDetail = async (req, res) => {
   try {
-    // console.log(req.body);
     const data = req.body;
     const empid = data.empid;
     const date = data.date;
@@ -256,8 +236,6 @@ const getWorkDetails = async (req, res) => {
       [req.params.empid]
     );
 
-    // console.log(workData);
-
     const sendingData = workData.rows;
 
     res.send(sendingData);
@@ -268,7 +246,6 @@ const getWorkDetails = async (req, res) => {
 
 const getWorkDetailsUsingDate = async (req, res) => {
   try {
-    // console.log(req.query);
     const data = req.query;
 
     const workData = await conn.query(
@@ -276,7 +253,6 @@ const getWorkDetailsUsingDate = async (req, res) => {
       [data.empid, data.date]
     );
 
-    // console.log(workData);
     const sendingData = workData.rows;
 
     res.send(sendingData);

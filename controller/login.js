@@ -1,8 +1,6 @@
 const conn = require("../db/conn.js");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
-// const sgMail = require("@sendgrid/mail");
-// sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 const transporter = nodemailer.createTransport({
   service: "gmail",
@@ -16,7 +14,6 @@ const LoginAdmin = async (req, res) => {
   try {
     const user = req.body;
 
-    // console.log(user);
     if (!user.username || !user.password) {
       throw new Error("Please enter valid data!");
     }
@@ -25,14 +22,11 @@ const LoginAdmin = async (req, res) => {
         `select * from admin where username='${user.username}'`
       );
 
-      // console.log(data);
-
       if (data.rowCount <= 0) {
         res.status(404).send({ err: "User not found!" });
         return;
       }
 
-      // console.log(data.rows[0].password);
       if (user.password !== data.rows[0].password) {
         throw new Error("Please enter valid password!");
       }
@@ -41,8 +35,6 @@ const LoginAdmin = async (req, res) => {
         { _id: 21410159 },
         "secret-key-for-generate-auth-token"
       );
-
-      // console.log(token);
 
       await conn.query(
         `update admin set token='${token}' where _id=${data.rows[0]._id}`
@@ -70,17 +62,12 @@ const LoginAdmin = async (req, res) => {
         "secret-key-for-generate-auth-token"
       );
 
-      // console.log(token);
-
       const loginstaffdata = await conn.query(
         "select * from tblstafflogin where empid=$1",
         [user.username]
       );
 
-      // res.send(loginstaffdata);
       if (loginstaffdata.rowCount <= 0) {
-        // res.send("HELLO FROM INSERT");
-
         await conn.query("insert into tblstafflogin values($1,$2)", [
           user.username,
           token,
@@ -111,8 +98,6 @@ const LoginAdmin = async (req, res) => {
           token,
           user.username,
         ]);
-
-        // res.send(setstafftoken);
 
         res.send({
           empid: sendingData.empid,
@@ -205,27 +190,10 @@ const sendForgotMail = async (req, res) => {
       html: `<h4>Your password is "${data.password}"</h4>`,
     };
 
-    // const msg = {
-    //   to: `${data.email}`,
-    //   from: "suhagiya.nayan01@gmail.com",
-    //   subject: "OFFICE MANAGEMENT SYSTEM-@admin!",
-    //   html: `<h4>Your password is "${data.password}"</h4>`,
-    // };
-
-    // await sgMail
-    //   .send(msg)
-    //   .then(() => {
-    //     console.log("forgot mail send!");
-    //   })
-    //   .catch((err) => {
-    //     console.log(err);
-    //   });
-
     transporter.sendMail(mailOptions, (error, info) => {
       if (error) {
         return console.error(error.message);
       }
-      console.log("mail send!" + info.response);
       res.send({ mailSend: true });
     });
   } catch (error) {
