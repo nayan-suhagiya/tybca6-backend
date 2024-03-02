@@ -388,7 +388,7 @@ const getPendingStaffLeave = async (req, res) => {
     );
 
     const sendingData = pendingLeaveData.rows;
-    console.log(sendingData);
+    // console.log(sendingData);
     res.send(sendingData);
   } catch (error) {
     res.status(400).send({ error });
@@ -403,7 +403,7 @@ const getApproveOrRejectStaffLeave = async (req, res) => {
 
     const sendingData = approveOrRejectLeaveData.rows;
 
-    console.log(sendingData);
+    // console.log(sendingData);
     res.send(sendingData);
   } catch (error) {
     res.status(400).send({ error });
@@ -644,7 +644,7 @@ const addSalary = async (req, res) => {
 const sendMail = async (req, res) => {
   try {
     const data = req.body;
-    console.log(data);
+    // console.log(data);
 
     pathToAttachment =
       "salary-slips/" +
@@ -694,7 +694,7 @@ const deleteSalary = async (req, res) => {
     const empid = req.params.data;
     const salarydate = moment(req.url.split("?")[1]).format("YYYY-MM-DD");
 
-    console.log(empid, salarydate);
+    // console.log(empid, salarydate);
 
     const deleteSalary = await conn.query(
       "delete from tblsalary where empid=$1 and salarydate=$2",
