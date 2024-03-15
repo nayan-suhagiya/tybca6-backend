@@ -17,7 +17,7 @@ const LoginAdmin = async (req, res) => {
     if (!user.username || !user.password) {
       throw new Error("Please enter valid data!");
     }
-    if (user.username == "admin") {
+    if (user.username == "theteamproject06@gmail.com") {
       const data = await conn.query(
         `select * from admin where username='${user.username}'`
       );
@@ -154,7 +154,7 @@ const UpdateAdminPassword = async (req, res) => {
   try {
     const updateData = await conn.query(
       "update admin set password=$1 where username=$2",
-      [req.body.password, "admin"]
+      [req.body.password, "theteamproject06@gmail.com"]
     );
 
     if (updateData.rowCount <= 0) {
@@ -170,10 +170,19 @@ const UpdateAdminPassword = async (req, res) => {
 const sendForgotMail = async (req, res) => {
   try {
     empid = req.body.empid;
+    let findData;
 
-    const findData = await conn.query("select * from tblstaff where empid=$1", [
-      empid,
-    ]);
+    if(empid === "theteamproject06@gmail.com"){
+      const adminEmail = empid;
+      findData = await conn.query("select * from admin where username=$1",[
+      adminEmail
+      ])
+    }else{
+      findData = await conn.query("select * from tblstaff where empid=$1 or email=$2", [
+        empid,
+        empid
+      ]);
+    }  
 
     if (findData.rowCount <= 0) {
       res.send({ userFound: false });
@@ -184,7 +193,7 @@ const sendForgotMail = async (req, res) => {
 
     const mailOptions = {
       from: "nickpatel734@gmail.com",
-      to: `${data.email}`,
+      to: `${empid === "theteamproject06@gmail.com" ? data.username :  data.email}`,
       subject: "OFFICE MANAGEMENT SYSTEM-oms@admin.com",
       text: `Hello ${data.fname}`,
       html: `<h4>Your password is "${data.password}"</h4>`,
@@ -200,6 +209,7 @@ const sendForgotMail = async (req, res) => {
     res.status(400).send({ error });
   }
 };
+
 
 module.exports = {
   LoginAdmin,
