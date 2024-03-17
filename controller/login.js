@@ -1,6 +1,7 @@
 const conn = require("../db/conn.js");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
+const { decryption } = require("../utils/helper.js");
 
 const transporter = nodemailer.createTransport({
   service: "gmail",
@@ -51,7 +52,7 @@ const LoginAdmin = async (req, res) => {
         return;
       }
 
-      if (user.password !== data.rows[0].password) {
+      if (user.password !== decryption(data.rows[0].password)) {
         throw new Error("Please enter valid password!");
       }
 

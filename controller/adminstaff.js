@@ -2,6 +2,7 @@ const conn = require("../db/conn");
 const moment = require("moment");
 
 const pdfmake = require("pdfmake");
+const { encryption, decryption } = require("../utils/helper");
 const nodemailer = require("nodemailer");
 const fs = require("fs");
 const fonts = {
@@ -25,6 +26,9 @@ const transporter = nodemailer.createTransport({
 const AddStaff = async (req, res) => {
   try {
     const staff = req.body;
+    console.log("staff.password",staff.password)
+    const encryptPassword = encryption(staff.password);
+    console.log('encryptPassword >>>>>',encryptPassword)
 
     empid = staff.empid;
     fname = staff.fname;
@@ -103,7 +107,7 @@ const AddStaff = async (req, res) => {
         city,
         state,
         address,
-        password,
+        password=encryptPassword,
         deptid,
         profile,
         bankname,
@@ -137,10 +141,20 @@ const AddStaff = async (req, res) => {
 };
 
 const GetStaff = async (req, res) => {
+  let data = []
   try {
-    const data = await conn.query("select * from tblstaff");
+    data = (await conn.query("select * from tblstaff")).rows;
+    
+    // data = data.map((item) => {
+    //   console.log("item.password >>>>",item.password)
+    //   item.password = decryption(item.password);
+    //   return item;
+    // });
 
-    res.send(data.rows);
+    // console.log('data >>>>>',data)
+    
+
+    res.send(data);
   } catch (error) {
     return res.status(404).send({ error });
   }
