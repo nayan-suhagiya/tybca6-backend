@@ -121,12 +121,15 @@ const AddStaff = async (req, res) => {
       return;
     }
 
+    const decryptingPassword = decryption(password);
+    console.log('decryptingPassword >>>>>',decryptingPassword)
+
     const mailOptions = {
       from: "nickpatel734@gmail.com",
       to: `${email}`,
       subject: "Welcome to OFFICE MANAGEMENT SYSTEM-oms@admin.com",
       text: `Hello ${fname}`,
-      html: `<h2 style="color:green">Thanks for joining with us!</h2> <br> <strong>Your USERNAME or ID = ${empid}</strong> <br> <strong>Your PASSWORD = ${password}</strong>`,
+      html: `<h2 style="color:green">Thanks for joining with us!</h2> <br> <strong>Your USERNAME or ID = ${empid}</strong> <br> <strong>Your PASSWORD = ${decryptingPassword}</strong>`,
     };
 
     transporter.sendMail(mailOptions, (error, info) => {
