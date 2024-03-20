@@ -4,6 +4,12 @@ const AddDept = async (req, res) => {
   try {
     const deptid = req.body.deptid;
     const dname = req.body.dname;
+
+    const findData = await conn.query("SELECT * FROM tblmasterdept WHERE dname ILIKE $1 LIMIT 1", [dname]);
+    if (findData.rowCount > 0) {
+      return res.status(409).send({message:"Department already exist with this name"})
+    }
+
     const insert = await conn.query("insert into tblmasterdept values($1,$2)", [
       deptid,
       dname,
