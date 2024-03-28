@@ -312,6 +312,13 @@ const addLeave = async (req, res) => {
   try {
     const data = req.body;
 
+    const alreadyExist = await conn.query("select * from tblleave where leavedate=$1",[data.date])
+
+    if(alreadyExist.rowCount > 0){
+      res.send({inserted:false,message:"Already exist!"})
+      return
+    }
+
     const addLeaveData = await conn.query("insert into tblleave values($1)", [
       data.date,
     ]);
